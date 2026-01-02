@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alice (Xena) Haspyd</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        a {
+            color: #1a1a1a;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            background: #1a1a1a;
+            color: #fafafa;
+        }
+
+        header {
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 14px;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .bio {
+            max-width: 700px;
+        }
+
+        .item {
+            margin-bottom: 25px;
+        }
+
+        .item-title {
+            font-weight: bold;
+        }
+
+        .item-meta {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .item-description {
+            margin-top: 5px;
+            font-size: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill {
+            background: #eee;
+            padding: 5px 12px;
+            font-size: 14px;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Alice (Xena) Haspyd</h1>
+        <p class="tagline">live coding _ audiovisual art _ sound _ engineering</p>
+        <p class="tagline">Kyiv, Ukraine</p>
+        <div class="links">
+            <a href="mailto:your@email.com">email</a>
+            <a href="https://youtube.com/@yourchannel" target="_blank">youtube</a>
+            <a href="https://instagram.com/yourhandle" target="_blank">instagram</a>
+            <a href="https://soundcloud.com/yourhandle" target="_blank">soundcloud</a>
+        </div>
+    </header>
+
+    <section id="about">
+        <h2>About</h2>
+        <p class="bio">
+            Multidisciplinary artist working at the intersection of live coding, audiovisual performance, and sound. 
+            Practice rooted in SuperCollider and TidalCycles, exploring algorithmic composition and real-time sound synthesis. 
+            Background in aerospace R&D and architecture informs a technical approach to artistic creation.
+            <!-- Додай свій текст тут -->
+        </p>
+    </section>
+
+    <section id="performances">
+        <h2>Selected Performances</h2>
+        
+        <div class="item">
+            <span class="item-title">EXPO 2025</span>
+            <span class="item-meta">— Presentation of Europe (Belgium Pavilion), Osaka, Japan, 2025</span>
+        </div>
+
+        <div class="item">
+            <span class="item-title">"Sonic Innervations" by Time Based</span>
+            <span class="item-meta">— Scotland, UK, June 2025</span>
+        </div>
+
+        <div class="item">
+            <span class="item-title">Kantine am Berghain</span>
+            <span class="item-meta">— TYME, Berlin, October 2023</span>
+        </div>
+
+        <div class="item">
+            <span class="item-title">EM-visia 2023</span>
+            <span class="item-meta">— 8-channel electro-acoustic performance, Kyiv, Ukraine, 2023</span>
+        </div>
+
+        <!-- Додай більше виступів -->
+
+    </section>
+
+    <section id="projects">
+        <h2>Projects</h2>
+
+        <div class="item">
+            <div class="item-title">"RIDNE"</div>
+            <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2023</div>
+            <p class="item-description">
+                <!-- Опис проєкту -->
+            </p>
+        </div>
+
+        <div class="item">
+            <div class="item-title">"Heavy Waters"</div>
+            <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2025-2026 (in progress)</div>
+            <p class="item-description">
+                <!-- Опис проєкту -->
+            </p>
+        </div>
+
+        <div class="item">
+            <div class="item-title">DIY Synthesizer</div>
+            <div class="item-meta">Hardware project — in development</div>
+            <p class="item-description">
+                <!-- Опис: який тип синтезатора, що зроблено -->
+            </p>
+        </div>
+
+        <!-- Додай громадський проєкт -->
+
+    </section>
+
+    <section id="education">
+        <h2>Education & Training</h2>
+
+        <div class="item">
+            <div class="item-title">Aerospace R&D</div>
+            <div class="item-meta">Development of flying apparatus — 1 year</div>
+        </div>
+
+        <div class="item">
+            <div class="item-title">Architecture Studies</div>
+            <div class="item-meta">Institution name — 1 year</div>
+        </div>
+
+        <!-- Додай воркшопи, курси якщо є -->
+
+    </section>
+
+    <section id="tools">
+        <h2>Tools</h2>
+        <div class="skills">
+            <span class="skill">SuperCollider</span>
+            <span class="skill">TidalCycles</span>
+            <span class="skill">Ableton Live</span>
+            <!-- Додай інші інструменти -->
+        </div>
+    </section>
+
+    <section id="press">
+        <h2>Press & Interviews</h2>
+
+        <div class="item">
+            <a href="#">Interview title or publication name</a>
+            <span class="item-meta">— Publication, Year</span>
+        </div>
+
+        <!-- Додай інші інтерв'ю -->
+
+    </section>
+
+    <footer>
+        <p>© 2025 Alice Haspyd</p>
+    </footer>
+
+</body>
+</html>
