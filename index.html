@@ -1,8 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <header class="hero">
   <img src="assets/angels.png" alt="Audiovisual performance banner">
+  <div class="hero-text">
+    <h1>Alice (Xena) Haspyd</h1>
+    <p>Audiovisual artist working with live coding, sound and algorithmic systems</p>
+  </div>
 </header>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +15,7 @@
     <style>
         .hero {
   position: relative;
-  width: 150%;
+  width: 100%;
   height: 70vh;
   overflow: hidden;
 }
@@ -19,7 +24,47 @@
   width: 150%;
   height: 100%;
   object-fit: cover;
+}
+
+.hero-text {
+  position: absolute;
+  bottom: 15%;
+  left: 10%;
+  color: white;
+  max-width: 600px;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        a {
+            color: #1a1a1a;
+            text-decoration: underline;
+        }
+
         a:hover {
             background: #1a1a1a;
             color: #fafafa;
@@ -27,6 +72,17 @@
 
         header {
             margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            margin-bottom: 20px;
         }
 
         .links {
