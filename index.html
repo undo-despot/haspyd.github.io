@@ -1,44 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <header class="hero">
-  <img src="assets/angels.png" alt="Audiovisual performance banner">
-</header>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alice (Xena) Haspyd</title>
+
     <style>
-        .hero {
-  position: relative;
-  width: 100%;
-  height: 70vh;
-  overflow: hidden;
-}
-
-.hero img {
-  width: 150%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-text {
-  position: absolute;
-  bottom: 15%;
-  left: 10%;
-  color: white;
-  max-width: 600px;
-}
-
-.hero-text h1 {
-  font-size: 3rem;
-  margin: 0;
-}
-
-.hero-text p {
-  font-size: 1.2rem;
-}
-
+        /* RESET */
         * {
             margin: 0;
             padding: 0;
@@ -51,9 +19,6 @@
             line-height: 1.6;
             color: #1a1a1a;
             background: #fafafa;
-            padding: 40px 20px;
-            max-width: 900px;
-            margin: 0 auto;
         }
 
         a {
@@ -66,25 +31,60 @@
             color: #fafafa;
         }
 
-        header {
-            margin-bottom: 60px;
+        /* HERO IMAGE */
+        .hero {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
         }
 
-        h1 {
-            font-size: 24px;
+        .hero img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* TEXT UNDER HERO */
+        .hero-info {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px 40px;
+        }
+
+        .hero-info h1 {
+            font-size: 28px;
             font-weight: normal;
             margin-bottom: 10px;
         }
 
+        .hero-info p {
+            color: #666;
+        }
+
+        /* MAIN CONTENT */
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 60px;
+        }
+
         .tagline {
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .links {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         section {
@@ -124,12 +124,6 @@
             font-size: 15px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
         .skills {
             display: flex;
             flex-wrap: wrap;
@@ -150,141 +144,113 @@
             font-size: 14px;
         }
 
-        /* responsive */
+        /* RESPONSIVE */
         @media (max-width: 600px) {
-            body {
-                padding: 20px 15px;
+            .hero {
+                height: 80vh;
             }
-            h1 {
-                font-size: 20px;
+
+            .hero-info h1 {
+                font-size: 22px;
             }
         }
     </style>
 </head>
+
 <body>
 
-    <header>
-        <h1>Alice Haspyd</h1>
-        <p class="tagline">live coding _ audiovisual art _ sound _ engineering</p>
-        <p class="tagline">Kyiv, Ukraine</p>
-        <div class="links">
-            <a href="mailto:your@email.com">email</a>
-            <a href="https://youtube.com/@yourchannel" target="_blank">youtube</a>
-            <a href="https://instagram.com/yourhandle" target="_blank">instagram</a>
-            <a href="https://soundcloud.com/yourhandle" target="_blank">soundcloud</a>
-        </div>
+    <!-- FULL WIDTH IMAGE -->
+    <header class="hero">
+        <img src="assets/angels.png" alt="Artwork">
     </header>
 
-    <section id="about">
-        <h2>About</h2>
-        <p class="bio">
-            Multidisciplinary artist working at the intersection of live coding, audiovisual performance, and sound. 
-            Practice rooted in SuperCollider and TidalCycles, exploring algorithmic composition and real-time sound synthesis. 
-            Background in aerospace R&D and architecture informs a technical approach to artistic creation.
-            <!-- Додай свій текст тут -->
-        </p>
+    <!-- TEXT BELOW IMAGE -->
+    <section class="hero-info">
+        <h1>Alice (Xena) Haspyd</h1>
+        <p>Audiovisual artist working with live coding, sound and algorithmic systems</p>
     </section>
 
-    <section id="performances">
-        <h2>Selected Performances</h2>
-        
-        <div class="item">
-            <span class="item-title">EXPO 2025</span>
-            <span class="item-meta">— Presentation of Europe (Belgium Pavilion), Osaka, Japan, 2025</span>
-        </div>
+    <!-- MAIN CONTENT -->
+    <main class="content">
 
-        <div class="item">
-            <span class="item-title">"Sonic Innervations" by Time Based</span>
-            <span class="item-meta">— Scotland, UK, June 2025</span>
-        </div>
+        <header>
+            <p class="tagline">live coding _ audiovisual art _ sound _ engineering</p>
+            <p class="tagline">Kyiv, Ukraine</p>
 
-        <div class="item">
-            <span class="item-title">Kantine am Berghain</span>
-            <span class="item-meta">— TYME, Berlin, October 2023</span>
-        </div>
+            <div class="links">
+                <a href="mailto:your@email.com">email</a>
+                <a href="https://youtube.com/@yourchannel" target="_blank">youtube</a>
+                <a href="https://instagram.com/yourhandle" target="_blank">instagram</a>
+                <a href="https://soundcloud.com/yourhandle" target="_blank">soundcloud</a>
+            </div>
+        </header>
 
-        <div class="item">
-            <span class="item-title">EM-visia 2023</span>
-            <span class="item-meta">— 8-channel electro-acoustic performance, Kyiv, Ukraine, 2023</span>
-        </div>
-
-        <!-- Додай більше виступів -->
-
-    </section>
-
-    <section id="projects">
-        <h2>Projects</h2>
-
-        <div class="item">
-            <div class="item-title">"RIDNE"</div>
-            <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2023</div>
-            <p class="item-description">
-                <!-- Опис проєкту -->
+        <section id="about">
+            <h2>About</h2>
+            <p class="bio">
+                Multidisciplinary artist working at the intersection of live coding, audiovisual performance, and sound.
+                Practice rooted in SuperCollider and TidalCycles, exploring algorithmic composition and real-time sound synthesis.
+                Background in aerospace R&D and architecture informs a technical approach to artistic creation.
             </p>
-        </div>
+        </section>
 
-        <div class="item">
-            <div class="item-title">"Heavy Waters"</div>
-            <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2025-2026 (in progress)</div>
-            <p class="item-description">
-                <!-- Опис проєкту -->
-            </p>
-        </div>
+        <section id="performances">
+            <h2>Selected Performances</h2>
 
-        <div class="item">
-            <div class="item-title">DIY Synthesizer</div>
-            <div class="item-meta">Hardware project — in development</div>
-            <p class="item-description">
-                <!-- Опис: який тип синтезатора, що зроблено -->
-            </p>
-        </div>
+            <div class="item">
+                <span class="item-title">EXPO 2025</span>
+                <span class="item-meta">— Presentation of Europe (Belgium Pavilion), Osaka, Japan, 2025</span>
+            </div>
 
-        <!-- Додай громадський проєкт -->
+            <div class="item">
+                <span class="item-title">"Sonic Innervations" by Time Based</span>
+                <span class="item-meta">— Scotland, UK, June 2025</span>
+            </div>
 
-    </section>
+            <div class="item">
+                <span class="item-title">Kantine am Berghain</span>
+                <span class="item-meta">— TYME, Berlin, October 2023</span>
+            </div>
 
-    <section id="education">
-        <h2>Education & Training</h2>
+            <div class="item">
+                <span class="item-title">EM-visia 2023</span>
+                <span class="item-meta">— 8-channel electro-acoustic performance, Kyiv, Ukraine, 2023</span>
+            </div>
+        </section>
 
-        <div class="item">
-            <div class="item-title">Aerospace R&D</div>
-            <div class="item-meta">Development of flying apparatus — 1 year</div>
-        </div>
+        <section id="projects">
+            <h2>Projects</h2>
 
-        <div class="item">
-            <div class="item-title">Architecture Studies</div>
-            <div class="item-meta">Institution name — 1 year</div>
-        </div>
+            <div class="item">
+                <div class="item-title">RIDNE</div>
+                <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2023</div>
+            </div>
 
-        <!-- Додай воркшопи, курси якщо є -->
+            <div class="item">
+                <div class="item-title">Heavy Waters</div>
+                <div class="item-meta">Standart Deviation & CTM Festival — audiovisual, 2025–2026</div>
+            </div>
 
-    </section>
+            <div class="item">
+                <div class="item-title">DIY Synthesizer</div>
+                <div class="item-meta">Hardware project — in development</div>
+            </div>
+        </section>
 
-    <section id="tools">
-        <h2>Tools</h2>
-        <div class="skills">
-            <span class="skill">SuperCollider</span>
-            <span class="skill">TidalCycles</span>
-            <span class="skill">Ableton Live</span>
-            <!-- Додай інші інструменти -->
-        </div>
-    </section>
+        <section id="tools">
+            <h2>Tools</h2>
+            <div class="skills">
+                <span class="skill">SuperCollider</span>
+                <span class="skill">TidalCycles</span>
+                <span class="skill">Ableton Live</span>
+            </div>
+        </section>
 
-    <section id="press">
-        <h2>Press & Interviews</h2>
+        <footer>
+            <p>© 2025 Alice Haspyd</p>
+        </footer>
 
-        <div class="item">
-            <a href="#">Interview title or publication name</a>
-            <span class="item-meta">— Publication, Year</span>
-        </div>
-
-        <!-- Додай інші інтерв'ю -->
-
-    </section>
-
-    <footer>
-        <p>© 2025 Alice Haspyd</p>
-    </footer>
+    </main>
 
 </body>
 </html>
