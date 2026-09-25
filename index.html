@@ -1,457 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xena Haspyd (undo despot) — Portfolio</title>
+<meta name="description" content="Xena Haspyd (undo despot) — Kyiv-based artist working across live-coded sound, data sonification, soldered-metal sculpture and drawing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xena Haspyd (undo despot)</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 20px; line-height: 1.6; color: #1a1a1a; background: #F2F2F2; }
+  a { color: #1a1a1a; text-decoration: underline; }
+  a:hover { background: #1a1a1a; color: #d9d9d9; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        body {
-           font-family: 'EB Garamond', serif;
-            font-size: 20px;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #F2F2F2;
-        }
+  nav { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 10px; padding: 20px 0; border-bottom: 1px solid #ddd; }
+  nav .name { font-size: 22px; text-decoration: none; }
+  nav ul { list-style: none; display: flex; gap: 22px; flex-wrap: wrap; font-size: 18px; }
 
-        a {
-            color: #1a1a1a;
-            text-decoration: underline;
-        }
+  .hero img { width: 100%; max-height: 650px; object-fit: cover; display: block; margin-top: 20px; }
+  .caption { font-size: 16px; color: #888; margin-top: 8px; font-style: italic; }
 
-        a:hover {
-            background: #1a1a1a;
-            color: #d9d9d9;
-        }
+  .intro { display: grid; grid-template-columns: 1fr 260px; gap: 40px; padding: 36px 0; }
+  .intro h1 { font-size: 44px; font-weight: normal; line-height: 1.15; margin-bottom: 4px; }
+  .intro .aka { color: #888; margin-bottom: 16px; }
+  .intro p.statement { color: #444; max-width: 720px; }
+  .intro img { width: 100%; height: auto; display: block; }
+  .links { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 18px; font-size: 18px; }
 
-        .hero {
-          
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px 20px 0;
-        }
+  .news { background: #1a1a1a; color: #eee; padding: 14px 18px; font-size: 18px; margin-bottom: 50px; }
+  .news a { color: #eee; }
+  .news a:hover { background: #eee; color: #1a1a1a; }
+  .news strong { font-weight: 600; }
 
-        .hero img {
-            width: 100%;
-            max-height: 650px;
-            object-fit: cover;
-            display: block;
-        }
+  h2 { font-size: 14px; font-weight: normal; text-transform: uppercase; letter-spacing: 2px; color: #999; margin: 60px 0 24px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
 
-        .hero-caption {
-            font-size: 20px;
-            color: #999;
-            margin-top: 8px;
-            font-style: italic;
-        }
+  .work { display: grid; grid-template-columns: 1fr 1.3fr; gap: 36px; padding: 30px 0 44px; border-bottom: 1px solid #e2e2e2; }
+  .work:last-of-type { border-bottom: none; }
+  .work h3 { font-size: 30px; font-weight: normal; line-height: 1.2; }
+  .work .meta { color: #666; font-size: 16px; margin: 6px 0 14px; }
+  .work .credits { color: #666; font-size: 15px; margin-top: 14px; }
+  .work .award { display: inline-block; border: 1px solid #1a1a1a; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; margin-bottom: 12px; }
+  .work p { font-size: 18px; }
+  .work .more { margin-top: 14px; font-size: 16px; display: flex; gap: 16px; flex-wrap: wrap; }
 
-        .hero-info {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 30px 20px;
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 40px;
-            align-items: left;
-        }
+  .media img { width: 100%; height: auto; display: block; margin-bottom: 16px; }
+  .media .img-cap { font-size: 14px; color: #777; margin: -10px 0 18px; }
+  .embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #ddd; margin-bottom: 16px; }
+  .embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid2 img { margin-bottom: 0; }
 
-        .hero-text h1 {
-            font-size: 44px;
-            font-weight: normal;
-            margin-bottom: 8px;
-        }
+  footer { margin: 70px 0 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 
-        .hero-text p {
-            color: #666;
-        }
-
-        .hero-photo img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        @media (max-width: 700px) {
-            .hero-info {
-                grid-template-columns: 2fr;
-                padding: 20px;
-            }
-
-            .hero-photo {
-                order: -1;
-                max-width: 220px;
-            }
-
-            .hero-text h1 {
-                font-size: 22px;
-            }
-        }
-
-        .content {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px 20px 40px;
-        }
-
-        .tagline {
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .links {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        section {
-            margin-bottom: 40px;
-        }
-
-        h2 {
-            font-size: 14px;
-            font-weight: normal;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #999;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .bio {
-            max-width: 700px;
-        }
-
-        .item {
-            margin-bottom: 20px;
-        }
-
-        .item-title {
-            font-weight: bold;
-        }
-
-        .item-meta {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .item-description {
-            margin-top: 5px;
-            font-size: 15px;
-        }
-
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .skill {
-            background: #eee;
-            padding: 5px 12px;
-            font-size: 14px;
-        }
-
-        .gallery {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            margin-top: 15px;
-        }
-
-        .gallery-item {
-            max-width: 500px;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .gallery-item p {
-            font-size: 14px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 2fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .media-item {
-            background: #eee;
-            padding: 15px;
-        }
-
-        .media-item .item-title {
-            margin-bottom: 10px;
-        }
-
-        footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #999;
-            font-size: 14px;
-        }
-    </style>
+  @media (max-width: 760px) {
+    body { font-size: 18px; }
+    .intro { grid-template-columns: 1fr; }
+    .intro .portrait { order: -1; max-width: 200px; }
+    .intro h1 { font-size: 32px; }
+    .work { grid-template-columns: 1fr; gap: 18px; }
+    .work h3 { font-size: 26px; }
+  }
+</style>
 </head>
-
 <body>
-    <header class="hero">
-        <img src="assets/angels.png" alt="Artwork">
-        <p class="hero-caption">"Angels" — charcoal on paper, 2024</p>
-    </header>
+<div class="wrap">
 
-    <section class="hero-info">
-        <div class="hero-text">
-            <h1>Xena Haspyd</h1>
-            <p>Artist working across live-coded sound, soldered-metal sculpture, and drawing — moving deliberately between unlike media to make distance touchable, turning what reaches us only as abstraction into forms a body can meet directly.</p>
-        </div>
-        <div class="hero-photo">
-            <img src="assets/portrait.jpg" alt="Portrait">
-        </div>
-         </section>
+  <nav>
+    <a class="name" href="index.html">Xena Haspyd</a>
+    <ul>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="cv.html">CV</a></li>
+      <li><a href="mailto:alicehaspyd@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
 
-    <main class="content">
-        <header>
-            <p class="tagline">Kyiv, Ukraine</p>
-            <div class="links">
-                <a href="mailto:alicehaspyd@gmail.com">email</a>
-                <a href="https://instagram.com/haspyd" target="_blank">instagram</a>
-                <a href="https://soundcloud.com/undo_despot" target="_blank">soundcloud</a>
-            </div>
-        </header>
+  <header class="hero">
+    <img src="assets/angels.png" alt="Angels — charcoal drawing">
+    <p class="caption">Angels — charcoal on paper, 2024</p>
+  </header>
 
-        <section id="about">
-            <h2>About</h2>
-            <p class="bio">
-                Her practice is rooted in the intersection of algorithmic systems and gestural intuition. She creates live-coded electronic music in SuperCollider and TidalCycles, where composition emerges through written code in real-time, alongside tactile, hand-driven processes — charcoal and pencil drawings, hand-soldered metal objects. The same hand and technical vocabulary she developed building FPV combat drones during an earlier R&D role in military aerospace now moves between soldered tin sculpture and large-scale sonifications of Ukraine's contaminated rivers — redirecting a wartime skill toward the body and the watershed.
-            </p>
-        </section>
-    </section>
-        <section id="education">
-            <h2>Education</h2>
+  <section class="intro">
+    <div>
+      <h1>Xena Haspyd</h1>
+      <p class="aka">also performing as undo despot · Kyiv, Ukraine</p>
+      <p class="statement">Artist working across live-coded sound, data sonification, soldered-metal sculpture and drawing — moving deliberately between unlike media to make distance touchable, turning what reaches us only as abstraction into forms a body can meet directly.</p>
+      <div class="links">
+        <a href="mailto:alicehaspyd@gmail.com">email</a>
+        <a href="https://instagram.com/haspyd" target="_blank" rel="noopener">instagram</a>
+        <a href="https://soundcloud.com/undo_despot" target="_blank" rel="noopener">soundcloud</a>
+        <a href="cv.html">cv</a>
+      </div>
+    </div>
+    <div class="portrait">
+      <img src="assets/portrait.jpg" alt="Portrait of Xena Haspyd">
+    </div>
+  </section>
 
-            <div class="item">
-                <span class="item-title">Architecture</span>
-                <span class="item-meta">— Odesa State Academy of Architecture and Urban Planning, Ukraine, 2019-2020</span>
-            </div>
+  <div class="news">
+    <strong>2026 —</strong> <em>Disturbed Ground</em> (∄ × CTM Festival), featuring <em>Heavy Waters</em>, received the
+    <strong>VIA – VUT Indie Award for Best Experiment</strong>, Reeperbahn Festival, Hamburg.
+    <a href="https://www.viaawards.de/news/disturbed-ground---307-.html" target="_blank" rel="noopener">→ read</a>
+  </div>
 
-            <div class="item">
-                <span class="item-title">Secondary Education, Odesa, Ukraine, 2008-2019 </span>
-            </div>
-        </section>
+  <!-- ============ WORKS ============ -->
+  <h2 id="works">Selected Works</h2>
 
-        <section id="performances">
-            <h2>Selected Performances</h2>
+  <article class="work">
+    <div>
+      <span class="award">VIA 2026 · Best Experiment</span>
+      <h3>Heavy Waters</h3>
+      <div class="meta">Audiovisual performance, 2025–2026 · premiered CTM Festival, Radialsystem, Berlin, 31 Jan 2026</div>
+      <p>A performance about the life of Ukraine's rivers — from mythical beings and sources of life, to industrial infrastructure reshaped in the Soviet era, to landscapes now carrying the contamination of war. Sound composed from environmental data and live-coded systems meets a visual language drawn from folklore, scientific research and ecological documentation.</p>
+      <p style="margin-top:12px">Commissioned within <em>Disturbed Ground</em>, a collaboration between Kyiv's ∄ and CTM Festival supported by the Goethe-Institut Co-production Fund.</p>
+      <div class="credits">
+        undo despot (sound, composition) · Zeynep Schilling · alen hast + myk rudik / u2203 studio · lighting: zeroday
+      </div>
+      <div class="more">
+        <a href="https://vimeo.com/1176169799" target="_blank" rel="noopener">video</a>
+        <a href="https://www.youtube.com/watch?v=TJs2yWof1Xg" target="_blank" rel="noopener">documentary</a>
+        <a href="https://www.ctm-festival.de/festival-2026/programme/schedule/event/disturbed-ground" target="_blank" rel="noopener">CTM</a>
+      </div>
+    </div>
+    <div class="media">
+      <div class="embed"><iframe src="https://player.vimeo.com/video/1176169799" title="Heavy Waters" allow="fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+      <!-- <img src="assets/heavy-waters-1.jpg" alt="Heavy Waters, CTM 2026"> додай фото з CTM / Уяздовського -->
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">Faust (1926) — teaser screening</span>
-                <span class="item-meta">— Goethe-Institut, Kyiv, Ukraine, 23 July 2026</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>Exceedance</h3>
+      <div class="meta">Data sonification, 2019–2026 · solo</div>
+      <p>A full sonification of Ukraine's state water-quality record. Every measured exceedance of permitted pollutant levels becomes an audible event, so that seven years of numbers kept in a registry become something a listener can sit inside for their whole duration.</p>
+      <div class="more">
+        <a href="https://vimeo.com/1210772343" target="_blank" rel="noopener">video</a>
+      </div>
+    </div>
+    <div class="media">
+      <div class="embed"><iframe src="https://player.vimeo.com/video/1210772343" title="Exceedance" allow="fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">EXPO 2025</span>
-                <span class="item-meta">— Presentation of Europe (Belgium Pavilion), Osaka, Japan, 2025</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>Faust (1926)</h3>
+      <div class="meta">Fixed sound design for F. W. Murnau's film · solo · teaser screening Goethe-Institut Kyiv, Jul 2026; premiere Nov 2026</div>
+      <p>A new score and sound design for Murnau's silent <em>Faust</em>.</p>
+    </div>
+    <div class="media">
+      <!-- <img src="assets/faust-still.jpg" alt="Faust teaser screening"> -->
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">Sonic Interventions (with Genevieve Murphy)</span>
-                <span class="item-meta">— TIME BASED, Scotland, UK, June 2025</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>asemic archive</h3>
+      <div class="meta">Hand-soldered tin and copper, ring scale · edition of five, 2026</div>
+      <p>Small wearable objects soldered by hand — a script that can be worn but not read.</p>
+    </div>
+    <div class="media">
+      <img src="assets/asemic-archive-1.jpg" alt="asemic archive, worn underwater">
+      <img src="assets/asemic-archive-2.jpg" alt="asemic archive, series view">
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">minimalistic noise (live set)</span>
-                <span class="item-meta">— Otel, Kyiv, Ukraine, 13 November 2024</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>Live sets</h3>
+      <div class="meta">Live coding · SuperCollider, TidalCycles</div>
+      <p>Improvised performances where composition happens as code written in real time.</p>
+      <div class="more">
+        <a href="https://soundcloud.com/standard-deviation/undo-despot-drifted-grand" target="_blank" rel="noopener">drifted grand piano (audio)</a>
+      </div>
+    </div>
+    <div class="media">
+      <div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/h08ZIqJg-Wg" title="minimalistic noise — live, Otel Kyiv 2024" allowfullscreen loading="lazy"></iframe></div>
+      <p class="img-cap">minimalistic noise — live, Otel, Kyiv, 13.11.2024</p>
+      <div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/PnzmEHEma6I" title="Sonic Interventions — Genevieve Murphy & alice haspyd" allowfullscreen loading="lazy"></iframe></div>
+      <p class="img-cap">Sonic Interventions — with Genevieve Murphy, TIME BASED, Scotland, 2025</p>
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">Kantine am Berghain</span>
-                <span class="item-meta">— TYME, Berlin, October 2023</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>Drawings</h3>
+      <div class="meta">Charcoal on paper, 2024–2025</div>
+    </div>
+    <div class="media">
+      <img src="assets/IMG_1637.JPG" alt="lovelorn habitat">
+      <p class="img-cap">lovelorn habitat, charcoal, 2025</p>
+      <img src="assets/IMG_1644.PNG" alt="alive copper clocker">
+      <p class="img-cap">alive copper clocker, charcoal, 2025</p>
+      <img src="assets/IMG_4906.JPEG" alt="keep it if u want to">
+      <p class="img-cap">keep it if u want to, charcoal, A5, 2024</p>
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">CTM Festival</span>
-                <span class="item-meta">— RIDNE project with Standart Deviation, Berlin, 2023</span>
-            </div>
+  <article class="work">
+    <div>
+      <h3>3D works</h3>
+      <div class="meta">Digital sculpture, 2025–2026 · in progress</div>
+      <p><em>biomech bolid</em> (2026) and <em>baby-drone</em> (2025), an unfinished game project.</p>
+    </div>
+    <div class="media">
+      <div class="grid2">
+        <img src="assets/IMG_2508.png" alt="biomech bolid">
+        <img src="assets/IMG_2500.png" alt="biomech bolid">
+      </div>
+      <p class="img-cap" style="margin-top:8px">biomech bolid, 3D render, 2026, wip</p>
+      <div class="grid2">
+        <img src="assets/Screenshot 2025-09-29 191900.png" alt="baby-drone">
+        <img src="assets/Screenshot 2025-09-29 192232.png" alt="baby-drone">
+        <img src="assets/IMG_2095.PNG" alt="baby-drone">
+        <img src="assets/IMG_2094.PNG" alt="baby-drone">
+      </div>
+      <p class="img-cap" style="margin-top:8px">baby-drone, game project, 2025, unfinished</p>
+    </div>
+  </article>
 
-            <div class="item">
-                <span class="item-title">EM-visia</span>
-                <span class="item-meta">— 8-channel electro-acoustic performance, Kyiv, Ukraine, 2023</span>
-            </div>
-        </section>
+  <!-- ============ ABOUT ============ -->
+  <h2 id="about">About</h2>
+  <p style="max-width:720px">
+    Her practice sits at the intersection of algorithmic systems and gestural intuition. She creates live-coded electronic music in SuperCollider and TidalCycles, where composition emerges through code written in real time, alongside tactile, hand-driven processes — charcoal and pencil drawing, hand-soldered metal objects. The same hand and technical vocabulary she developed building FPV drones during an earlier R&amp;D role in military aerospace now moves between soldered tin sculpture and large-scale sonifications of Ukraine's contaminated rivers — redirecting a wartime skill toward the body and the watershed.
+  </p>
+  <p style="max-width:720px; margin-top:14px">
+    Her work has been presented at CTM Festival (Berlin), Ujazdowski Castle Centre for Contemporary Art (Warsaw), Kantine am Berghain, EXPO 2025 Osaka and the Goethe-Institut Kyiv. In 2026 <em>Disturbed Ground</em>, the programme that commissioned <em>Heavy Waters</em>, received the VIA – VUT Indie Award for Best Experiment.
+    <a href="cv.html">Full CV →</a>
+  </p>
 
-        <section id="media">
-            <h2>Media</h2>
-            <p class="item-meta" style="margin-bottom: 15px;">Selected recordings and documentation</p>
+  <footer>
+    <span>© 2026 Xena Haspyd</span>
+    <span><a href="cv.html">CV</a> · <a href="mailto:alicehaspyd@gmail.com">alicehaspyd@gmail.com</a></span>
+  </footer>
 
-            <div class="media-grid">
-
-                <div class="media-item">
-                    <div class="item-title">Heavy Waters</div>
-                    <p class="item-meta">Live audiovisual performance / sound installation, 2025</p>
-                    <p style="margin-top: 10px;"><a href="https://vimeo.com/1176169799" target="_blank">watch video</a></p>
-                </div>
-
-                <div class="media-item">
-                    <div class="item-title">Exceedance</div>
-                    <p class="item-meta">Full data sonification, 2019–2026</p>
-                    <p style="margin-top: 10px;"><a href="https://vimeo.com/1210772343" target="_blank">watch video</a></p>
-                </div>
-
-                <div class="media-item">
-                    <div class="item-title"> minimalistic noise live set </div>
-                    <p class="item-meta">Otel, Kyiv, 13.11.2024</p>
-                    <p style="margin-top: 10px;"><a href="https://www.youtube.com/watch?v=h08ZIqJg-Wg" target="_blank">watch video</a></p>
-                </div>
-
-                <div class="media-item">
-                    <div class="item-title"> Sonic Interventions — Genevieve Murphy & alice haspyd (live)</div>
-                    <p class="item-meta">TIME BASED, Scotland, 2025</p>
-                    <p style="margin-top: 10px;"><a href="https://www.youtube.com/watch?v=PnzmEHEma6I" target="_blank">watch video</a></p>
-                </div>
-                <div class="media-item">
-                    <div class="item-title">Audio Work</div>
-                    <p class="item-meta">undo despot - drifted grand piano</p>
-                    <p style="margin-top: 10px;"><a href="https://soundcloud.com/standard-deviation/undo-despot-drifted-grand" target="_blank">listen on soundcloud</a></p>
-                </div>
-            </div>
-        </section>
-
-        <section id="graphic-work">
-            <h2>Graphic Work</h2>
-            <div class="gallery">
-                
-                <div class="gallery-item">
-                    <img src="assets/IMG_1637.JPG" alt="Drawing 1">
-                    <p> lovelorn habitat, charcoal, 2025</p>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/IMG_1644.PNG" alt="Drawing 2">
-                    <p> alive copper clocker ,charcoal, 2025</p>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/IMG_4906.JPEG" alt="Drawing 3">
-                    <p> keep it if u want to, charcoal, a5, 2024</p>
-                </div>
-            </div>
-        </section>
-</section>
-
-        <section id="sculpture">
-            <h2>Sculpture</h2>
-            <div class="gallery">
-
-                <div class="gallery-item">
-                    <img src="assets/asemic-archive-1.jpg" alt="asemic archive, worn underwater">
-                    <p>asemic archive, hand-soldered tin and copper, ring scale, 2026</p>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/asemic-archive-2.jpg" alt="asemic archive, series view">
-                    <p>asemic archive — edition of five, 2026</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="3d-work">
-            <h2>3D works</h2>
-            <div class="gallery">
-                
-                <div class="gallery-item">
-                    <img src="assets/IMG_2508.png" alt="3d 1">
-                    <p>biomech bolid,3D render, 2026, wip</p>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/IMG_2500.png" alt="3d 2">
-                    <p>biomech bolid,3D render, 2026, wip</p>
-                </div>
-                 <div class="gallery-item">
-                    <img src="assets/Screenshot 2025-09-29 191900.png" alt="3d 1">
-                    <p> gamedev project, unfinished, baby-drone, 2025 </p>
-                </div>
-                  <div class="gallery-item">
-                    <img src="assets/Screenshot 2025-09-29 192232.png" alt="3d 2">
-                    <p>gamedev project, unfinished, baby-drone, 2025 </p>
-                </div>
-                  <div class="gallery-item">
-                    <img src="assets/IMG_2095.PNG" alt="3d 2">
-                    <p>gamedev project, unfinished, baby-drone, 2025 </p>
-                </div>
-                  <div class="gallery-item">
-                    <img src="assets/IMG_2094.PNG" alt="3d 2">
-                    <p>gamedev project, unfinished, baby-drone, 2025 </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="projects">
-            <h2>Projects</h2>
-
-            <div class="item">
-                <div class="item-title">Faust (1926)</div>
-                <div class="item-meta">solo — fixed sound design for F. W. Murnau's <em>Faust</em>; teaser screening Jul 2026, premiere Nov 2026</div>
-            </div>
-
-            <div class="item">
-                <div class="item-title">Heavy Waters</div>
-                <div class="item-meta">with u2203 studio & Zeynap Schilling — audiovisual performance / installation, 2025–2026</div>
-            </div>
-
-            <div class="item">
-                <div class="item-title">Exceedance</div>
-                <div class="item-meta">solo — full data sonification of Ukraine's water-quality record, 2019–2026</div>
-            </div>
-
-            <div class="item">
-                <div class="item-title">asemic archive</div>
-                <div class="item-meta">solo — hand-soldered tin and copper objects, 2026</div>
-            </div>
-
-            <div class="item">
-                <div class="item-title">RIDNE</div>
-                <div class="item-meta">with Standart Deviation — CTM Festival, Berlin, 2023</div>
-            </div>
-
-            <div class="item">
-                <div class="item-title">DIY Synthesizer</div>
-                <div class="item-meta">Hardware project — in development</div>
-            </div>
-        </section>
-
-        <section id="tools">
-            <h2>Tools</h2>
-            <div class="skills">
-                <span class="skill">SuperCollider</span>
-                <span class="skill">TidalCycles</span>
-                <span class="skill">IanniX</span>
-                <span class="skill">Logic Pro</span>
-                <span class="skill">Charcoal / Pencil / Soldering</span>
-                <span class="skill">3D</span>
-            </div>
-        </section>
-
-        <footer>
-            <p>© 2026 Xena Haspyd</p>
-        </footer>
-    </main>
+</div>
 </body>
 </html>
