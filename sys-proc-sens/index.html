@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Карта експериментальної музики 1824–2026: система, процес і відчуття. Від Бетховена до live coding і українського андеграунду.">
+<meta property="og:title" content="sys / proc / sens">
+<meta property="og:description" content="Карта експериментальної музики 1824–2026: система, процес і відчуття. Від Бетховена до live coding і українського андеграунду.">
+<style>html{color-scheme:light dark}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>sys / proc / sens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a horizontal score — three lanes drawn as five-line staves, works as noteheads, influences as slurs; era essays, reading lists and a glossary below. */
+:root{
+  --paper:#EDEFF3; --card:#F8F9FB; --ink:#151924; --muted:#5A6172; --rule:#C6CCD7; --band:#E3E6EC;
+  --sys:#2A44C6; --proc:#0C8467; --sens:#C2336A; --ua:#B98A00;
+  --f-display:"Lora",Georgia,"Times New Roman",serif;
+  --f-body:"Lora",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1119; --card:#161A24; --ink:#E5E8EF; --muted:#959CAD; --rule:#2B3142; --band:#131722;
+  --sys:#8494FF; --proc:#3CC9A0; --sens:#FF6E9F; --ua:#F2C230; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1119; --card:#161A24; --ink:#E5E8EF; --muted:#959CAD; --rule:#2B3142; --band:#131722;
+  --sys:#8494FF; --proc:#3CC9A0; --sens:#FF6E9F; --ua:#F2C230; color-scheme:dark}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--sys);outline-offset:2px;border-radius:3px}
+
+header{padding-block:56px 28px;display:grid;gap:20px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,7vw,76px);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 .arrow{color:var(--sens);font-weight:500}
+.lede{max-width:62ch;font-size:clamp(16px,2vw,19px);margin:0}
+.formula{font-family:var(--f-mono);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted)}
+.formula b{font-weight:500;color:var(--ink)}
+nav.jump{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px}
+nav.jump a{color:var(--muted);text-underline-offset:3px}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-block:8px 14px}
+.controls .hint{font-size:13px;color:var(--muted);margin-left:auto}
+.chip{font:500 13px var(--f-body);border:1.5px solid var(--c);color:var(--ink);background:transparent;border-radius:999px;padding:6px 12px 6px 10px;display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+.chip[aria-pressed="false"]{opacity:.45;border-style:dashed}
+.chip[aria-pressed="false"] i{background:transparent;border:1.5px solid var(--c)}
+.chip.ua i{border-radius:2px}
+
+.mapbox{overflow-x:auto;overflow-y:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+#map{display:block}
+#map text{fill:var(--ink)}
+.eralabel{font-family:var(--f-display);font-size:13px;font-weight:700}
+.erayears{font-family:var(--f-mono);font-size:11px;fill:var(--muted)!important}
+.lanelabel{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.staff{stroke:var(--rule);stroke-width:1}
+.edge{fill:none;stroke:var(--rule);stroke-width:1.4;transition:stroke .2s,opacity .2s}
+.edge.on{stroke-width:2.2}
+.node{cursor:pointer}
+.node .head{transition:transform .15s}
+.node:hover .head,.node:focus .head{transform:scale(1.25)}
+.node .yr{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)!important}
+.node .yr .uat{fill:var(--ua)!important;font-weight:500}
+.node .nm{font-size:12.5px;font-weight:500}
+.node.dim{opacity:.28}
+.node.sel .nm{font-weight:600}
+.node:focus{outline:none}
+.node:focus-visible .ring{stroke:var(--ink);stroke-width:1.5}
+
+.detail{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding-block:26px 40px;border-bottom:1px solid var(--rule)}
+@media (max-width:760px){.detail{grid-template-columns:1fr;gap:18px}}
+.d-meta{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lanetag{color:var(--c);border:1px solid var(--c);border-radius:999px;padding:1px 8px}
+.uatag{color:var(--ua);border:1px solid var(--ua);border-radius:3px;padding:0 6px;font-family:var(--f-mono);font-size:11px}
+.d-title{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.4vw,34px);line-height:1.12;margin:10px 0 4px;text-wrap:balance}
+.d-author{font-size:15px;color:var(--muted);margin:0 0 14px}
+.d-note{font-size:17px;max-width:60ch;margin:0}
+.k{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+.counter{display:inline-block;margin-top:12px;font-family:var(--f-mono);font-size:12px;color:var(--sens);border:1px dashed var(--sens);padding:2px 8px;border-radius:4px}
+.d-side{display:grid;gap:18px;align-content:start}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:600 14px var(--f-body);text-decoration:none;padding:10px 16px;border-radius:6px;border:1.5px solid var(--ink);display:inline-flex;gap:8px;align-items:center}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn small{font-weight:400;opacity:.75}
+.rel ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:500 13px var(--f-body);background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:4px 9px;cursor:pointer}
+.rel button span{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:5px}
+.rel .none{font-size:13px;color:var(--muted)}
+
+section.block{padding-block:48px 8px;display:grid;gap:36px}
+section.block>h2{font-family:var(--f-display);font-size:clamp(22px,3vw,30px);margin:0;font-weight:700}
+section.block>p.intro{margin:-20px 0 0;color:var(--muted);max-width:62ch}
+.era{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-top:22px;border-top:1px solid var(--rule)}
+@media (max-width:760px){.era{grid-template-columns:1fr;gap:10px}}
+.era .yrs{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.era h3{font-family:var(--f-display);font-size:19px;line-height:1.2;margin:4px 0 0;font-weight:700;text-wrap:balance}
+.era .thesis{font-size:17px;margin:0 0 14px;max-width:62ch}
+.works{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.works li{display:grid;grid-template-columns:62px 12px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px dotted var(--rule)}
+.works .y{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.works .dot{width:9px;height:9px;border-radius:50%;background:var(--c);align-self:center}
+.works .t{background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;min-width:0}
+.works .t b{font-weight:600}
+.works .t span{color:var(--muted)}
+.works .lk{display:flex;gap:10px;font-size:13px;white-space:nowrap}
+.works .lk a,.books a,.gloss a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:520px){.works li{grid-template-columns:52px 10px minmax(0,1fr)}.works .lk{grid-column:3}}
+.books{margin-top:20px;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.books ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.books li{display:grid;gap:2px}
+.books .bt{font-weight:600}
+.books .ba{font-size:13px;color:var(--muted)}
+.books .bn{font-size:14px}
+
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0 28px}
+.gloss div{padding:14px 0;border-top:1px solid var(--rule);display:grid;gap:4px;align-content:start}
+.gloss dt{font-family:var(--f-display);font-weight:700;font-size:15px}
+.gloss dd{margin:0;font-size:15px}
+.gloss .gl{font-size:13px}
+
+.search{display:grid;gap:10px;padding-block:4px 14px}
+.sbox{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.sbox .k{margin:0}
+.sbox input{flex:1 1 280px;min-width:0;font:400 16px var(--f-body);color:var(--ink);background:var(--card);border:1.5px solid var(--rule);border-radius:6px;padding:10px 12px}
+.sbox input:focus{outline:none;border-color:var(--ink)}
+.sbox button{font:500 13px var(--f-body);background:transparent;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:8px 10px;cursor:pointer}
+.genres{display:flex;flex-wrap:wrap;gap:6px}
+.genres button{font:500 12.5px var(--f-body);background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:999px;padding:4px 10px;cursor:pointer}
+.genres button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.genres button span{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:4px}
+.genres button[aria-pressed="true"] span{color:var(--paper);opacity:.7}
+.results{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:12px 14px;display:grid;gap:8px}
+.results .rc{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.results ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;max-height:220px;overflow-y:auto}
+.results button{font:500 13px var(--f-body);background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-left:3px solid var(--c);border-radius:4px;padding:4px 9px;cursor:pointer;text-align:left}
+.results button span{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:5px}
+.results button em{font-style:normal;color:var(--muted)}
+.search>.k{margin-bottom:-4px}
+.aescard{display:grid;gap:8px;padding-bottom:10px;border-bottom:1px dotted var(--rule)}
+.aesrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:baseline}
+@media (max-width:520px){.aesrow{grid-template-columns:1fr;gap:2px}}
+.aesrow p,.d-aes,.d-peeps p{margin:0}
+.d-aes{margin-top:14px;max-width:60ch;font-size:15px}
+.d-peeps{margin-top:12px}
+.peeps{display:flex;flex-wrap:wrap;gap:4px 6px}
+.peeps button{font:500 13px var(--f-body);background:transparent;color:var(--ink);border:0;border-bottom:1px dashed var(--muted);padding:1px 0;cursor:pointer}
+.peeps button:hover{border-bottom-style:solid}
+.peeps button.aes{border:1px solid var(--rule);border-radius:999px;padding:2px 9px}
+.node.hit .ring{stroke:var(--ink);stroke-width:2}
+.node.hit .nm{font-weight:600}
+.edge.quiet{opacity:.12!important}
+.erajump{display:flex;flex-wrap:wrap;gap:6px;padding-block:0 12px}
+.erajump button{font:500 12px var(--f-mono);background:transparent;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:4px 8px;cursor:pointer}
+.erajump button:hover{color:var(--ink);border-color:var(--ink)}
+.uaper{display:grid;gap:0}
+.uaper article{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-block:18px;border-top:1px solid var(--rule)}
+@media (max-width:760px){.uaper article{grid-template-columns:1fr;gap:8px}}
+.uaper .yrs{font-family:var(--f-mono);font-size:13px;color:var(--ua)}
+.uaper h3{font-family:var(--f-display);font-size:17px;line-height:1.25;margin:4px 0 0;font-weight:700;text-wrap:balance}
+.uaper p{margin:0 0 10px;max-width:62ch}
+.uaper ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.uaper button{font:500 13px var(--f-body);background:var(--card);color:var(--ink);border:1px solid var(--rule);border-left:3px solid var(--c);border-radius:4px;padding:4px 9px;cursor:pointer;text-align:left}
+.uaper button span{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:5px}
+.uathesis{border-top:1px solid var(--rule);padding-top:18px;max-width:72ch}
+.uathesis ol{margin:6px 0 0;padding-left:22px;display:grid;gap:10px}
+.uathesis .gap{font-size:14px;color:var(--muted);margin:16px 0 0}
+footer{padding-block:40px 56px;font-size:13px;color:var(--muted);display:grid;gap:6px;max-width:70ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ── minimal layer ── */
+:root{--paper:#F4F5F7;--rule:#D5D9E0;--band:#EEF0F3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#0F1117;--rule:#262B36;--band:#12151C}}
+:root[data-theme="dark"]{--paper:#0F1117;--rule:#262B36;--band:#12151C}
+header{padding-block:44px 22px;gap:8px}
+h1{font-weight:600;font-size:clamp(28px,4.6vw,48px);letter-spacing:-.035em;line-height:1.05}
+.lede{font-size:16px;color:var(--muted);max-width:60ch}
+.count{white-space:nowrap}
+.bar{display:flex;gap:8px;align-items:center;padding-block:4px 10px}
+.bar input{flex:1 1 auto;min-width:0;font:400 16px var(--f-body);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:8px 2px}
+.bar input:focus{outline:none;border-bottom-color:var(--ink)}
+.bar button{font:500 13px var(--f-body);background:transparent;color:var(--muted);border:0;padding:8px 6px;cursor:pointer}
+.bar button:hover,.bar button[aria-expanded="true"]{color:var(--ink)}
+.opts{display:grid;gap:12px;padding-block:6px 14px}
+.optrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:560px){.optrow{grid-template-columns:1fr;gap:6px}}
+.optrow>.k{margin:5px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;border-width:1px;padding:4px 10px 4px 8px}
+.erajump{padding:0}
+.erajump button,.genres button{border-radius:999px}
+.results{background:transparent;border:0;border-top:1px solid var(--rule);border-radius:0;padding:12px 0}
+.results button{background:transparent}
+.mapbox{border-color:var(--rule)}
+.edge{stroke-width:1.1}
+.node .nm{font-size:12px;font-weight:400}
+.node.sel .nm{font-weight:600}
+.eralabel{font-family:var(--f-body);font-size:12px;font-weight:600}
+.detail{padding-block:22px 28px;border-bottom:0}
+.d-title{font-family:var(--f-display);font-weight:600;letter-spacing:-.02em;font-size:clamp(20px,2.8vw,28px)}
+.d-note{font-size:16px}
+.btn{font-weight:500;font-size:13.5px;padding:8px 14px;border-width:1px}
+details.more{border-top:1px solid var(--rule);padding-top:10px}
+details.more>summary,details.fold>summary{cursor:pointer;list-style:none;font-weight:500;color:var(--muted)}
+details.more>summary::-webkit-details-marker,details.fold>summary::-webkit-details-marker{display:none}
+details.more>summary::after,details.fold>summary::after{content:" +";font-family:var(--f-mono)}
+details.more[open]>summary::after,details.fold[open]>summary::after{content:" −"}
+details.more[open]>summary{margin-bottom:12px}
+details.more .rel{margin-top:12px}
+details.fold{border-top:1px solid var(--rule);padding-block:16px}
+details.fold>summary{font-size:17px;color:var(--ink)}
+details.fold[open]>summary{margin-bottom:18px}
+details.fold .era,details.fold .uaper article{border-top-color:var(--rule)}
+.era h3,.uaper h3{font-family:var(--f-display);font-weight:600;font-size:16px}
+.books{background:transparent;border:0;border-left:2px solid var(--rule);border-radius:0;padding:4px 0 4px 14px}
+.howto{display:grid;gap:8px;max-width:62ch;color:var(--muted)}
+.howto p{margin:0}
+kbd{font-family:var(--f-mono);font-size:12px;border:1px solid var(--rule);border-radius:3px;padding:0 4px}
+footer{display:none}
+details.fold p.intro{margin:0 0 14px;color:var(--muted);max-width:62ch}
+/* ── editorial serif: Lora throughout, mono only for years ── */
+body{font-family:var(--f-body);font-size:16px;font-weight:400;letter-spacing:0}
+h1{font-family:var(--f-display);font-weight:500;font-style:normal;font-size:clamp(30px,4.6vw,46px);letter-spacing:-.01em;line-height:1.15}
+h1 em{font-weight:500}
+.lede{font-size:17px;color:var(--muted)}
+.d-title{font-family:var(--f-display);font-weight:500;font-size:clamp(24px,3vw,32px);letter-spacing:-.005em;line-height:1.2}
+.d-author{font-style:italic;font-size:17px}
+.d-note{font-size:17px;line-height:1.55}
+.era h3,.uaper h3{font-family:var(--f-display);font-weight:500;font-size:20px;line-height:1.25}
+.era .thesis,.uaper p{font-size:17px;line-height:1.55}
+details.fold>summary{font-family:var(--f-display);font-size:21px;font-weight:500;color:var(--ink)}
+.gloss dt{font-family:var(--f-display);font-size:17px;font-weight:600}
+.eralabel{font-family:var(--f-display);font-size:14px;font-style:italic;font-weight:500}
+.lanelabel{font-family:var(--f-display);font-size:13px;font-style:italic;text-transform:none;letter-spacing:0}
+.node .nm{font-family:var(--f-display);font-size:12.5px;font-weight:400}
+.node.sel .nm{font-weight:600}
+.k{font-family:var(--f-mono);font-weight:400}
+.btn{font-family:var(--f-body);font-weight:500;font-size:14px;border:1px solid var(--ink);border-radius:3px}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.peeps button{font-family:var(--f-body);font-size:14px}
+.peeps button.aes{font-style:normal}
+/* ── Lora, light-as-possible weights ── */
+body{font-weight:400}
+h1,.d-title,details.fold>summary,.era h3,.uaper h3{font-weight:400}
+h1{font-size:clamp(30px,4.4vw,44px);letter-spacing:-.015em}
+b,strong,.works .t b,.uathesis b,.gloss dt{font-weight:500}
+.node .nm{font-weight:400}
+.node.sel .nm{font-weight:500}
+.btn{font-weight:400}
+.btn.primary{font-weight:500}
+.toprow{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.lang{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule);white-space:nowrap}
+.lang:hover{color:var(--ink);border-bottom-color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="toprow"><h1>sys / proc / sens</h1><a class="lang" href="en/">English</a></div>
+    <p class="lede">Карта експериментальної музики 1824–2026: як ідеал переїхав з досконалого об'єкта через систему на якість слухання. <span class="count" id="count"></span></p>
+  </header>
+
+  <div class="bar">
+    <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Пошук" aria-label="Пошук: артист, твір, естетика або слово">
+    <button id="qclear" type="button" hidden>×</button>
+    <button id="optToggle" type="button" class="ghost" aria-expanded="false" aria-controls="opts">Фільтри</button>
+  </div>
+  <div id="opts" class="opts" hidden>
+    <div class="optrow"><span class="k">Доріжки</span>
+      <div class="chips">
+        <button class="chip" data-lane="sys" aria-pressed="true" style="--c:var(--sys)"><i></i>Система</button>
+        <button class="chip" data-lane="proc" aria-pressed="true" style="--c:var(--proc)"><i></i>Процес</button>
+        <button class="chip" data-lane="sens" aria-pressed="true" style="--c:var(--sens)"><i></i>Відчуття</button>
+        <button class="chip ua" id="uaonly" aria-pressed="false" style="--c:var(--ua)"><i></i>Лише Україна</button>
+      </div></div>
+    <div class="optrow"><span class="k">Епохи</span><div class="erajump" id="erajump" aria-label="Перейти до епохи на карті"></div></div>
+    <div class="optrow"><span class="k">Естетики</span><div class="genres" id="genres" aria-label="Естетики"></div></div>
+  </div>
+  <div class="results" id="results" hidden></div>
+</div>
+
+<div class="mapbox" id="mapbox"><svg id="map" role="img" aria-label="Хронологія творів на трьох доріжках з лініями впливу"></svg></div>
+
+<div class="wrap">
+  <section class="detail" id="detail" aria-live="polite"></section>
+  <details class="fold" id="eras"><summary>Епохи, твори і що почитати</summary></details>
+  <details class="fold" id="ua"><summary>Український андеграунд</summary>
+    <p class="intro">Шість хвиль від київського авангарду до сцени воєнного часу. Натисни на назву, щоб побачити її на карті; на карті ці ноти позначені жовтим UA.</p>
+    <div class="uaper" id="uaper"></div>
+    <div class="uathesis">
+      <span class="k">Що українська лінія додає до статті</span>
+      <ol>
+        <li><b>Система тут часто державна, а не естетична.</b> Західний авангард сам обирав серіалізм, а в УРСР «правильну» форму нав'язувала влада, і модернізм лаяли за «формалізм». Тому звернення до тембру, тиші й саморобного звуку тут було ще й формою опору.</li>
+        <li><b>Андеграунд ховався в прикладному і домашньому.</b> Мультфільми, театр, касети, квартирні записи. Ідеальний твір тут навіть не було де виконати, тож процес і відчуття ставали єдиним доступним шляхом.</li>
+        <li><b>Канон будує архів, і часто ззовні.</b> «Цукор Біла Смерть», Няньо, Юрченко чи Гончарова стали відомими десятиліттями пізніше, завдяки перевиданням для західного ринку. Це той самий механізм, що й Мендельсон з Бахом у 1829 році, і він суперечить ідеї, що «відчуття» звільнилося від канону.</li>
+        <li><b>Під час війни увага стає питанням виживання.</b> Слухати місто, тривоги й тишу тепер не естетична практика, а щоденна необхідність. Музика стає свідченням і пам'яттю, як «Kyiv Eternal».</li>
+      </ol>
+      <p class="gap">Чесна примітка: більшість доступних джерел англомовні й зосереджені на Києві та Харкові. Львівська, одеська й дніпровська сцени 90-х та нульових задокументовані слабше, тож ця частина карти напевно неповна. Якщо знаєш, кого бракує, це варто додати.</p>
+    </div>
+    <div class="books"><span class="k">Що почитати про українську сцену</span><ul id="uaread"></ul></div>
+  </details>
+  <details class="fold" id="glossary"><summary>Словник</summary><dl class="gloss" id="gloss"></dl></details>
+  <details class="fold"><summary>Як читати карту</summary>
+    <div class="howto">
+      <p>Три доріжки, як три нотні стани: система (ідеал і правила), процес (система як інструмент) і відчуття (звук, тіло, слухання). Кожна нота — твір, студія чи подія. Лінії показують вплив або реакцію.</p>
+      <p>«Слухати» веде на пошук YouTube, «Читати» — на Вікіпедію або сайт проєкту, книжки — на Open Library. Жовта позначка UA — українська сцена.</p>
+      <p>Клавіші: <kbd>/</kbd> пошук, <kbd>Enter</kbd> перша знахідка, <kbd>Esc</kbd> скинути.</p>
+    </div>
+  </details>
+</div>
+
+<script>
+const w=q=>"https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q);
+const uw=q=>"https://uk.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(q);
+const ol=q=>"https://openlibrary.org/search?q="+encodeURIComponent(q);
+
+const ERAS=[
+ {id:"e0",a:1800,b:1890,w:360,name:"Культ твору",thesis:"Ідея музики як досконалого, завершеного об'єкта виникає на початку XIX століття разом з концертними залами, каноном і культом генія. Але вже тоді Берліоз і Вагнер тягнуть музику до стану і бажання, а не лише до форми.",
+  books:[["The Imaginary Museum of Musical Works","Лідія Ґер, 1992","Головна книжка про те, як поняття «музичного твору» склалося близько 1800 року і чому воно не вічне.",ol("Imaginary Museum of Musical Works Goehr")],
+         ["Про музично-прекрасне","Едуард Ганслік, 1854","Першоджерело формалізму. Коротка й полемічна, читається за вечір.",ol("Hanslick On the Musically Beautiful")]]},
+ {id:"e1",a:1890,b:1914,w:420,name:"Сенсорний бунт",thesis:"Ще до Першої світової композитори свідомо обирають тембр, колір, шум і тіло замість правил гармонії. Навіть Шенберг пише «мелодію тембрів». Відчуття як метод зовсім не нове.",
+  books:[["Ескіз нової естетики музики","Феруччо Бузоні, 1907","Маніфест про мікротони і майбутні електричні інструменти, написаний до появи цих інструментів.",ol("Busoni Sketch of a New Esthetic of Music")],
+         ["Мистецтво шумів","Луїджі Руссоло, 1913","Футуристичний маніфест про шум міста і машин як музичний матеріал.",ol("Russolo Art of Noises")],
+         ["The Rest Is Noise","Алекс Росс, 2007","Найчитабельніша історія музики XX століття. Хороша опора для всієї статті.",ol("The Rest Is Noise Alex Ross")]]},
+ {id:"e2",a:1914,b:1945,w:480,name:"Система і шум разом",thesis:"Міжвоєння тримає два шляхи одночасно. З одного боку нові правила: додекафонія і неокласицизм. З іншого — звук як матеріал: шум, електрика, ударні, нутрощі рояля. Між ними стоять мікротоністи, які будують нові системи строю, щоб почути простір між нотами. Дихотомія «до війни терміни, після відчуття» тут не працює.",
+  books:[["New Musical Resources","Генрі Коуелл, 1930","Ідеї про кластери, складні ритми і зв'язок ритму з висотою. Кейдж вчився у Коуелла.",ol("Cowell New Musical Resources")],
+         ["The Liberation of Sound","Едгар Варез, лекції 1930-х","Тексти, де Варез описує музику як організований звук і мріє про електронні інструменти.",w("Edgard Varèse")]]},
+ {id:"e3",a:1945,b:1960,w:760,name:"Раціональний максимум",thesis:"Після війни авангард хоче почати з нуля і доводить контроль до межі: кожен параметр звуку визначає ряд. У СРСР «ідеал» навпаки диктує держава, і модернізм там лають як «формалізм». Паралельно на плівці й у графічних партитурах проростає слухання.",
+  books:[["Філософія нової музики","Теодор Адорно, 1949","Захист Шенберга і критика Стравінського. Показує, як естетика стає моральним аргументом.",ol("Adorno Philosophy of New Music")],
+         ["Silence","Джон Кейдж, 1961","Лекції і тексти 1950-х. Ключ до 4′33″ і до ідеї, що слухання важливіше за твір.",ol("John Cage Silence")],
+         ["Formalized Music","Яніс Ксенакіс, 1963/1971","Як математика і стохастика стають способом отримати фізичний, масивний звук.",ol("Xenakis Formalized Music")],
+         ["Treatise on Musical Objects","П'єр Шеффер, 1966","Теорія «звукового об'єкта» і редукованого слухання.",ol("Schaeffer Treatise on Musical Objects")]]},
+ {id:"e4",a:1960,b:1980,w:760,name:"Поворот до сприйняття",thesis:"Тут ідеал переходить з об'єкта на досвід. Твір стає процесом, простором, інструкцією або способом слухати. Колишні серіалісти приходять до дроуну й тиші. Саме цей період найточніше підтверджує інтуїцію статті.",
+  books:[["Experimental Music: Cage and Beyond","Майкл Найман, 1974","Класична книжка про різницю між «авангардом» і «експериментальною музикою».",ol("Nyman Experimental Music Cage and Beyond")],
+         ["The Tuning of the World","Реймонд Мюррей Шейфер, 1977","Акустична екологія: як слухати місто, ліс і власне середовище.",ol("Schafer Tuning of the World")],
+         ["Music as a Gradual Process","Стів Райх, 1968","Короткий есей про музику, в якій чути сам процес.",w("Music as a Gradual Process")]]},
+ {id:"e5",a:1980,b:2000,w:1100,name:"Помилка і текстура",thesis:"Технологія робить звук доступним усім. Комп'ютер стає інструментом композитора, збій стає естетикою, а танцпол — колективним тілом без автора-генія. Warp повертає клубну електроніку до домашнього уважного слухання, а Pan Sonic і raster-noton зводять звук до синусоїди й імпульсу.",
+  books:[["Ocean of Sound","Девід Туп, 1995","Подорож від Дебюссі до ембієнту і клубної електроніки. Дуже близька до логіки цієї карти.",ol("Toop Ocean of Sound")],
+         ["Energy Flash","Саймон Рейнольдс, 1998","Історія рейву і техно як тілесної колективної культури.",ol("Reynolds Energy Flash")],
+         ["Microsound","Кертіс Роудз, 2001","Звук на рівні мікрочасток: гранулярний синтез і його естетика.",ol("Curtis Roads Microsound")]]},
+ {id:"e6",a:2000,b:2027,w:1400,name:"Код як увага",thesis:"Система повертається, але як живий процес наживо, що служить відчуттю тут і зараз. Поруч розквітають польові записи і новий дроун. Водночас відчуття можна перетворити на формулу, і це чесний контраргумент.",
+  books:[["The Aesthetics of Failure","Кім Каскоун, 2000","Есей, що теоретично обґрунтовує глітч і помилку як матеріал.",w("Kim Cascone")],
+         ["Audio Culture","ред. Крістоф Кокс і Деніел Ворнер, 2004","Антологія текстів від Руссоло до клубної культури. Майже вся карта в першоджерелах.",ol("Audio Culture Readings in Modern Music")],
+         ["Listening to Noise and Silence","Саломе Феґелін, 2010","Філософія слухання звукового мистецтва.",ol("Voegelin Listening to Noise and Silence")],
+         ["Deep Listening: A Composer's Sound Practice","Полін Оліверос, 2005","Практичні вправи на слухання від авторки терміну.",ol("Oliveros Deep Listening Composer's Sound Practice")],
+         ["Live Coding: A User's Manual","Блеквелл, Маклін, Ноубл, Рорхубер, 2022","Історія і філософія live coding від людей зі сцени.",ol("Live Coding A User's Manual")]]}
+];
+const LANES={sys:{name:"Система",sub:"ідеал і правила"},proc:{name:"Процес",sub:"система як інструмент"},sens:{name:"Відчуття",sub:"звук, тіло, слухання"}};
+
+// [id, year, lane, author, title, short, note, YouTube query, read URL, opts{c:counter, yl:label, ua}]
+const R=[
+ ["beethoven",1824,"sys","Людвіг ван Бетховен","Дев'ята симфонія","Дев'ята","Симфонія стає священним текстом, а виконавець — його слугою. Від Бетховена відраховують ідею твору як вершини, яку треба точно відтворити.","Beethoven Symphony 9",w("Symphony No. 9 (Beethoven)")],
+ ["mendelssohn",1829,"sys","Фелікс Мендельсон","Відродження «Страстей за Матвієм» Баха","Бах відроджено","Музику минулого вперше виконують як канон, майже як музейний експонат. Народжується ідея «вічного твору».","Bach St Matthew Passion",w("St Matthew Passion")],
+ ["berlioz",1830,"sens","Гектор Берліоз","«Фантастична симфонія»","Фантастична","Програмна симфонія про сни й марення. Вже тоді музика прагне передати стан, а не лише бездоганну форму.","Berlioz Symphonie fantastique",w("Symphonie fantastique")],
+ ["hanslick",1854,"sys","Едуард Ганслік","«Про музично-прекрасне»","Ганслік","Головний маніфест формалізму: суть музики в звучних формах, що рухаються, а не в почуттях слухача. Послухати можна Брамса, якого Ганслік ставив за взірець.","Brahms Symphony No. 1",w("Eduard Hanslick")],
+ ["wagner",1865,"sens","Ріхард Вагнер","«Трістан та Ізольда»","Трістан","Тристан-акорд довго не розв'язується. Нескінченне бажання стає звуком і розхитує тональність зсередини.","Wagner Tristan und Isolde prelude",w("Tristan und Isolde")],
+ ["satie",1888,"sens","Ерік Саті","«Гімнопедії»","Гімнопедії","Статичність, повтор і простота як тихий виклик романтичному пафосу.","Satie Gymnopédies",w("Gymnopédies")],
+ ["debussy",1894,"sens","Клод Дебюссі","Прелюдія до «Післяполудневого відпочинку фавна»","Фавн","Тембр і атмосфера важать більше за розвиток теми. Дебюссі ставив насолоду вуха вище за правила гармонії.","Debussy Prélude à l'après-midi d'un faune",w("Prélude à l'après-midi d'un faune")],
+ ["busoni",1907,"sens","Феруччо Бузоні","«Ескіз нової естетики музики»","Бузоні","Бузоні мріє про нові строї, мікротони й електричні інструменти. Молодий Варез вважав цю книжку своїм поштовхом.","Busoni Berceuse élégiaque",w("Sketch of a New Esthetic of Music")],
+ ["ives",1908,"proc","Чарльз Айвз","«The Unanswered Question»","Unanswered Question","Три шари рухаються незалежно: струнні, труба і флейти. Колаж і одночасність задовго до повоєнного авангарду.","Ives The Unanswered Question",w("The Unanswered Question")],
+ ["farben",1909,"sens","Арнольд Шенберг","П'ять п'єс для оркестру, op. 16: «Farben»","Farben","Акорд майже стоїть, змінюється лише тембр. Той самий Шенберг, що потім створить додекафонію, тут працює чистим кольором звуку.","Schoenberg Five Pieces for Orchestra Farben",w("Five Pieces for Orchestra (Schoenberg)")],
+ ["scriabin",1910,"sens","Олександр Скрябін","«Прометей. Поема вогню»","Прометей","У партитурі є окрема партія світла. Синестезія стає частиною самого твору.","Scriabin Prometheus Poem of Fire",w("Prometheus: The Poem of Fire")],
+ ["russolo",1913,"sens","Луїджі Руссоло","Маніфест «Мистецтво шумів»","Мистецтво шумів","Шум визнано музичним матеріалом. Руссоло будує intonarumori, механічні машини для шуму.","Russolo intonarumori",w("The Art of Noises")],
+ ["rite",1913,"sens","Ігор Стравінський","«Весна священна»","Весна священна","Ритм, тіло й архаїка замість витонченої форми. Прем'єра в Парижі закінчилася скандалом.","Stravinsky Rite of Spring",w("The Rite of Spring")],
+ ["furniture",1917,"sens","Ерік Саті","«Меблева музика»","Меблева музика","Музика, яку не треба слухати уважно. Повна протилежність ідеальному твору і пряма попередниця ембієнту.","Satie Musique d'ameublement",w("Furniture music")],
+ ["theremin",1920,"sens","Лев Термен","Терменвокс","Терменвокс","Інструмент, на якому грають рухом тіла в повітрі, без дотику. Електрика вперше стає голосом.","Clara Rockmore theremin",w("Theremin")],
+ ["schoenberg",1923,"sys","Арнольд Шенберг","Сюїта для фортепіано, op. 25","Шенберг op. 25","Один із перших повністю додекафонних творів: звуковисотність підпорядкована ряду з 12 тонів.","Schoenberg Suite op. 25",w("Suite for Piano (Schoenberg)")],
+ ["octet",1923,"sys","Ігор Стравінський","Октет для духових","Октет","Неокласицизм: після «Весни» Стравінський повертається до ясної форми і ремесла.","Stravinsky Octet for Wind Instruments",w("Octet (Stravinsky)")],
+ ["cowell",1925,"sens","Генрі Коуелл","«The Banshee»","The Banshee","Грають прямо по струнах всередині рояля. Інструмент перетворюється на джерело шелесту і завивання.","Henry Cowell The Banshee",w("The Banshee (Cowell)")],
+ ["antheil",1926,"sens","Джордж Антейл","«Механічний балет»","Ballet mécanique","Піаноли, сирени й пропелери літака. Машинний шум як тіло міста.","Antheil Ballet mécanique",w("Ballet Mécanique")],
+ ["webern",1928,"sys","Антон Веберн","Симфонія, op. 21","Веберн op. 21","Ряди, канони й симетрії, стиснені до кількох хвилин. Саме Веберн стане кумиром повоєнного Дармштадта.","Webern Symphony op. 21",w("Symphony (Webern)")],
+ ["martenot",1928,"sens","Моріс Мартено","Хвилі Мартено","Ondes Martenot","Електронний інструмент з ковзним, співучим звуком. Мессіан згодом зробить його голосом «Турангаліли».","ondes Martenot Turangalîla",w("Ondes Martenot")],
+ ["varese",1931,"sens","Едгар Варез","«Іонізація»","Іонізація","Твір лише для ударних і сирен. Варез називав музику організованим звуком.","Varèse Ionisation",w("Ionisation (Varèse)")],
+ ["hindemith",1937,"sys","Пауль Гіндеміт","«Unterweisung im Tonsatz»","Гіндеміт","Підручник, що пропонує нову «природну» систему гармонії. Віра в правило як основу ремесла.","Hindemith Ludus Tonalis",w("Paul Hindemith")],
+ ["cage39",1939,"sens","Джон Кейдж","«First Construction (in Metal)»","First Construction","Металеві пластини, гальмівні барабани й гонги як оркестр. Будь-який предмет може звучати.","John Cage First Construction in Metal",w("First Construction (in Metal)")],
+ ["darmstadt",1946,"sys","Дармштадт","Літні курси нової музики","Дармштадт","Головна лабораторія повоєнного авангарду, де сформувався тотальний серіалізм.","Darmstadt summer courses new music",w("Darmstädter Ferienkurse")],
+ ["zhdanov",1948,"sys","ЦК ВКП(б)","Постанова про «формалізм» у музиці","Постанова 1948","Радянська влада звинувачує Прокоф'єва, Шостаковича та інших у «формалізмі». Тут ідеал нав'язує держава: зрозумілість, мелодійність, соцреалізм.","Shostakovich Symphony 8",w("Zhdanov Doctrine")],
+ ["schaeffer",1948,"sens","П'єр Шеффер","«Étude aux chemins de fer»","Шеффер","Записані й змонтовані звуки потягів. Музика конкрет вчить слухати звук як об'єкт, відірваний від джерела.","Pierre Schaeffer Etude aux chemins de fer",w("Musique concrète")],
+ ["nancarrow",1948,"proc","Конлон Нанкарроу","«Studies for Player Piano»","Нанкарроу","Пробиває перфострічки для механічного піаніно, щоб отримати темпи, які не зіграє жодна людина. Машина як виконавець.","Nancarrow Study for Player Piano",w("Studies for Player Piano")],
+ ["messiaen",1949,"sys","Олів'є Мессіан","«Mode de valeurs et d'intensités»","Мессіан","Висота, тривалість, гучність і атака кожної ноти закріплені заздалегідь. Написано в Дармштадті, і це поштовх до тотального серіалізму.","Messiaen Mode de valeurs et d'intensités",w("Mode de valeurs et d'intensités")],
+ ["adorno",1949,"sys","Теодор Адорно","«Філософія нової музики»","Адорно","Захищає Шенберга як єдиний чесний шлях і критикує Стравінського. Теорія стає моральним аргументом. Послухати можна «Той, хто вцілів у Варшаві» Шенберга.","Schoenberg A Survivor from Warsaw",w("Philosophy of New Music")],
+ ["henry",1950,"sens","П'єр Шеффер і П'єр Анрі","«Symphonie pour un homme seul»","Людина сама","Дихання, кроки, голос і препароване фортепіано на плівці. Тіло людини як оркестр.","Schaeffer Henry Symphonie pour un homme seul",w("Symphonie pour un homme seul")],
+ ["feldman",1950,"sens","Мортон Фельдман","«Projection 1»","Projection 1","Графічна партитура: вказано регістр і час, але не точні ноти. Звук сам по собі важливіший за конструкцію.","Morton Feldman Projection 1",w("Morton Feldman")],
+ ["changes",1951,"proc","Джон Кейдж","«Music of Changes»","Music of Changes","Рішення ухвалює Книга змін. Випадковість теж процедура, тобто система, але вже без волі автора.","John Cage Music of Changes",w("Music of Changes")],
+ ["lyatoshynsky",1951,"sys","Борис Лятошинський","Третя симфонія","Лятошинський 3","Фінал довелося переписати під тиском радянської критики. Приклад того, як «правильна» форма нав'язується ззовні. Учнями Лятошинського були Сильвестров і Грабовський.","Лятошинський Симфонія 3",uw("Лятошинський Борис Миколайович"),{ua:1}],
+ ["boulez",1952,"sys","П'єр Булез","«Structures Ia»","Structures Ia","Тотальний серіалізм у чистому вигляді: кожен параметр виведено з рядів.","Boulez Structures Ia",w("Structures (Boulez)")],
+ ["433",1952,"sens","Джон Кейдж","4′33″","4′33″","Твір складається з навколишнього звуку і уваги слухача. Об'єкта більше немає, лишається тільки слухання.","John Cage 4'33\"",w("4′33″")],
+ ["xenakis",1954,"proc","Яніс Ксенакіс","«Metastaseis»","Metastaseis","Математика дає не абстракцію, а фізичну масу глісандо. Невдовзі Ксенакіс відкрито критикує серіалізм.","Xenakis Metastaseis",w("Metastaseis")],
+ ["barron",1956,"proc","Бебе і Луїс Беррон","«Forbidden Planet»","Forbidden Planet","Перший повністю електронний саундтрек. Схеми, які «помирають» під навантаженням, звучать як живі організми.","Bebe Louis Barron Forbidden Planet",w("Louis and Bebe Barron")],
+ ["gesang",1956,"proc","Карлгайнц Штокгаузен","«Gesang der Jünglinge»","Gesang","Хлопчачий голос і синусоїди сплавлені в просторі з кількох гучномовців. Серійне мислення переходить у звук, що огортає слухача.","Stockhausen Gesang der Jünglinge",w("Gesang der Jünglinge")],
+ ["babbitt",1958,"sys","Мілтон Беббіт","Стаття «Who Cares if You Listen?»","Беббіт","Композитор як вузький спеціаліст. Назву статті дав редактор, але саме вона стала символом епохи.","Milton Babbitt Philomel",w("Who Cares if You Listen")],
+ ["radiophonic",1958,"sens","BBC Radiophonic Workshop","Майстерня звуку BBC","Radiophonic","Плівка, генератори і побутові предмети для радіо й телебачення. Експериментальний звук потрапляє в кожен дім.","Delia Derbyshire Doctor Who theme 1963",w("BBC Radiophonic Workshop"),{aes:"Ремесло плівкових петель, обробка знайдених предметів, згодом синтезатори EMS (VCS3, Synthi 100), звук для радіо й телебачення.",peeps:["Дафна Орам","Десмонд Бріско","Делія Дербішир","Браян Ходжсон","Маддалена Фагандіні","Джон Бейкер"]}],
+ ["poeme",1958,"sens","Едгар Варез","«Poème électronique»","Poème électronique","Звучав у павільйоні Philips на Expo 58, спроєктованому Ксенакісом, через сотні гучномовців. Музика як архітектура простору.","Varèse Poème électronique",w("Poème électronique")],
+ ["penderecki",1960,"sens","Кшиштоф Пендерецький","«Плач за жертвами Хіросіми»","Threnody","52 струнні, кластери, вищання і шуми. Графічні позначки замість мелодії, а сприйняття — як фізичний удар.","Penderecki Threnody to the Victims of Hiroshima",w("Threnody to the Victims of Hiroshima")],
+ ["young",1960,"sens","Ла Монте Янг","«Composition 1960 #7»","Composition #7","Інструкція: квінта сі–фа-дієз, «тримати довго». Дроун як спосіб увійти всередину звуку.","La Monte Young drone",w("La Monte Young")],
+ ["ligeti",1961,"sens","Дьордь Лігеті","«Atmosphères»","Atmosphères","Мелодії немає, є хмара звуку. Мікрополіфонія перетворює оркестр на текстуру.","Ligeti Atmosphères",w("Atmosphères")],
+ ["fluxus",1962,"proc","Fluxus","Фестивалі Fluxus","Fluxus","Партитури-інструкції, події, побутові дії як твір. Межа між музикою і життям стирається.","Fluxus event score performance",w("Fluxus")],
+ ["riley",1964,"proc","Террі Райлі","«In C»","In C","53 короткі фрази, які музиканти повторюють у власному темпі. Процес розгортається на очах у слухача.","Terry Riley In C",w("In C")],
+ ["reich",1965,"proc","Стів Райх","«It's Gonna Rain»","It's Gonna Rain","Дві однакові плівкові петлі поступово розходяться у фазі. Слухач чує сам процес.","Steve Reich It's Gonna Rain",w("It's Gonna Rain")],
+ ["cardew",1967,"proc","Корнеліус Кардью","«Treatise»","Treatise","193 сторінки графічної партитури без правил прочитання. Музиканти самі вирішують, як це звучить.","Cardew Treatise performance",w("Treatise (music)"),{yl:"1963–67"}],
+ ["stimmung",1968,"sens","Карлгайнц Штокгаузен","«Stimmung»","Stimmung","Шість голосів близько години співають обертони одного акорду. Колишній серіаліст приходить до медитативного слухання.","Stockhausen Stimmung",w("Stimmung (Stockhausen)")],
+ ["lucier",1969,"proc","Елвін Лусьє","«I Am Sitting in a Room»","I Am Sitting…","Голос багато разів перезаписують у кімнаті, доки мова не стає резонансом простору. Суха процедура дає глибоко чуттєвий досвід.","Alvin Lucier I am sitting in a room",w("I Am Sitting in a Room")],
+ ["hrabovsky",1970,"proc","Леонід Грабовський","«Гомеоморфії»","Гомеоморфії","Цикл зі назвою, взятою з топології. Київський авангард шукає власну систему всупереч радянській нормі, а Грабовський згодом стане одним із піонерів комп'ютерної музики в Україні.","Леонід Грабовський Гомеоморфія",uw("Грабовський Леонід Олександрович"),{ua:1,yl:"1968–70"}],
+ ["oliveros",1971,"sens","Полін Оліверос","«Sonic Meditations»","Sonic Meditations","Текстові інструкції для спільного слухання і звучання. Слухання стає практикою.","Pauline Oliveros Sonic Meditations",w("Pauline Oliveros")],
+ ["coltrane",1971,"sens","Еліс Колтрейн","«Journey in Satchidananda»","Satchidananda","Спіритуальний джаз з арфою і тамбурою. Дроун і медитація приходять у музику через іншу, неакадемічну традицію.","Alice Coltrane Journey in Satchidananda",w("Journey in Satchidananda")],
+ ["kraftwerk",1974,"proc","Kraftwerk","«Autobahn»","Autobahn","Синтезатори і монотонний рух трасою. Німецька електроніка, яка потім надихне Детройт.","Kraftwerk Autobahn",w("Autobahn (album)")],
+ ["grisey",1975,"proc","Жерар Ґрізе","«Partiels»","Partiels","Спектралізм: оркестр розгортає спектр одного низького звуку тромбона. Наука служить вуху.","Grisey Partiels",w("Partiels")],
+ ["silvestrov",1977,"sens","Валентин Сильвестров","«Тихі пісні»","Тихі пісні","Шлях від київського серійного авангарду 60-х до тиші, пам'яті й відлуння в межах однієї біографії. Найближчий український приклад зсуву.","Сильвестров Тихі пісні",uw("Сильвестров Валентин Васильович"),{ua:1,yl:"1974–77"}],
+ ["schafer",1977,"sens","Реймонд Мюррей Шейфер","«The Tuning of the World»","Шейфер","Книга про акустичну екологію і поняття саундскейпу: світ навколо як композиція, яку можна слухати.","World Soundscape Project Vancouver",w("Soundscape")],
+ ["eno",1978,"proc","Браян Іно","«Music for Airports»","Music for Airports","Петлі різної довжини самі складаються в нові поєднання. Ембієнт як середовище, а не предмет уваги.","Brian Eno Music for Airports",w("Ambient 1: Music for Airports")],
+ ["spiegel",1980,"proc","Лорі Спіґел","«The Expanding Universe»","Expanding Universe","Алгоритмічна музика, створена в Bell Labs. Код задає правила, а результат звучить як повільне дихання.","Laurie Spiegel The Expanding Universe",w("The Expanding Universe (album)")],
+ ["techno",1987,"sens","Rhythim Is Rhythim (Деррік Мей)","«Strings of Life»","Strings of Life","Детройт-техно: тілесна колективна музика танцполу, де автор-геній відходить на другий план.","Rhythim Is Rhythim Strings of Life",w("Strings of Life")],
+ ["max",1988,"proc","Міллер Пакет","Max","Max","Візуальне середовище, де звук будують із з'єднаних блоків. Програмування стає інструментом композитора.","Max MSP generative music",w("Max (software)")],
+ ["radigue",1988,"sens","Еліан Радіг","«Trilogie de la Mort»","Trilogie de la Mort","Години повільних змін на синтезаторі ARP. Дроун як практика уваги. Колись Радіг працювала поруч із Шеффером і Анрі.","Éliane Radigue Trilogie de la Mort",w("Éliane Radigue"),{yl:"1988–93"}],
+ ["deep",1989,"sens","Оліверос, Демпстер, Панайотіс","«Deep Listening»","Deep Listening","Альбом записано в підземній цистерні з дуже довгою реверберацією. Простір грає разом з музикантами.","Pauline Oliveros Deep Listening cistern",w("Deep Listening")],
+ ["westerkamp",1989,"sens","Гільдегард Вестеркамп","«Kits Beach Soundwalk»","Kits Beach","Композиторка коментує запис пляжу і відфільтровує міський гул. Саундскейп стає особистим досвідом слухання.","Hildegard Westerkamp Kits Beach Soundwalk",w("Hildegard Westerkamp")],
+ ["aphex",1992,"sens","Aphex Twin","«Selected Ambient Works 85–92»","SAW 85–92","Ембієнт приходить з клубної культури, зроблений вдома, на саморобній і дешевій техніці.","Aphex Twin Selected Ambient Works 85-92",w("Selected Ambient Works 85–92")],
+ ["oval",1994,"proc","Oval","«Systemisch»","Systemisch","Подряпані CD і збої програвача стають матеріалом. Помилка перетворюється на естетику.","Oval Systemisch",w("Oval Markus Popp")],
+ ["sc",1996,"proc","Джеймс Маккартні","SuperCollider","SuperCollider","Мова для синтезу звуку в реальному часі. На ній досі тримається значна частина live coding сцени.","SuperCollider live coding",w("SuperCollider")],
+ ["merzbow",1996,"sens","Merzbow","«Pulse Demon»","Pulse Demon","Японський нойз: суцільна стіна звуку. Відчуття, доведене до фізичної межі.","Merzbow Pulse Demon",w("Pulse Demon")],
+ ["ikeda",1996,"proc","Рьодзі Ікеда","«+/-»","+/-","Синусоїди, клацання і частоти на межі чутності. Дані й тиша як матеріал.","Ryoji Ikeda +/-",w("Ryoji Ikeda")],
+ ["cascone",2000,"proc","Кім Каскоун","Есей «The Aesthetics of Failure»","Aesthetics of Failure","Теоретичне обґрунтування глітчу: помилка цифрових систем як нова територія композиції.","Kim Cascone",w("Kim Cascone")],
+ ["autechre",2001,"proc","Autechre","«Confield»","Confield","Генеративні системи створюють ритми, які неможливо передбачити. Алгоритм як співавтор.","Autechre Confield",w("Confield")],
+ ["watson",2003,"sens","Кріс Вотсон","«Weather Report»","Weather Report","Польові записи як композиція: льодовик, саванна і море, стиснені в часі.","Chris Watson Weather Report",w("Chris Watson")],
+ ["toplap",2004,"proc","TOPLAP","Маніфест live coding","TOPLAP","Вимога показувати екрани: код стає прозорим, а процес творення — частиною виступу.","TOPLAP live coding","https://toplap.org"],
+ ["tidal",2009,"proc","Алекс Маклін","TidalCycles","TidalCycles","Формальна мова ритмічних патернів, у якій зміни й помилки звучать наживо. Система служить моменту.","TidalCycles live coding performance","https://tidalcycles.org"],
+ ["winderen",2010,"sens","Яна Віндерен","«Energy Field»","Energy Field","Гідрофонні записи з Баренцевого моря і фіордів. Чути підводне життя, яке людина зазвичай не чує.","Jana Winderen Energy Field",w("Jana Winderen")],
+ ["algorave",2012,"proc","Algorave","Алгоритми для танцю","Algorave","Live coding виходить на танцпол: система і тіло зустрічаються в одній залі.","algorave live coding","https://algorave.com"],
+ ["sonicpi",2012,"proc","Сем Аарон","Sonic Pi","Sonic Pi","Live coding для шкіл і Raspberry Pi. Код як музичний інструмент, доступний навіть дітям.","Sonic Pi live coding","https://sonic-pi.net"],
+ ["mood",2015,"sys","Стримінгові сервіси","Mood-плейлисти","Mood-плейлисти","Відчуття теж можна перетворити на формулу. «Музика для фокусу» — це сенсорність без дослідження, підібрана алгоритмом.","lofi beats to study to",w("Playlist"),{c:1,yl:"2010-ті"}],
+ ["herndon",2019,"proc","Голлі Герндон","«PROTO»","PROTO","Альбом з нейромережею, яку навчили на голосах ансамблю. Голос, тіло і машинне навчання разом.","Holly Herndon PROTO",w("Proto (Holly Herndon album)")],
+ ["malone",2019,"sens","Калі Мелоун","«The Sacrificial Code»","Sacrificial Code","Орган у чистому строї і дуже повільні акорди. Нова генерація дроуну як практики тривалої уваги.","Kali Malone The Sacrificial Code",w("Kali Malone")],
+ ["strudel",2022,"proc","Strudel","TidalCycles у браузері","Strudel","Live coding без встановлення: патерни можна писати й чути просто на вебсторінці.","strudel live coding","https://strudel.cc"],
+ ["lcbook",2022,"proc","Блеквелл, Маклін, Ноубл, Рорхубер","«Live Coding: A User's Manual»","Live Coding Manual","Книга MIT Press про історію і філософію live coding. Сцена описує себе сама.","live coding performance algorave",ol("Live Coding A User's Manual")],
+ // ── Електронні студії ──
+ ["grm",1951,"sens","Шеффер, Анрі, Байль та інші","Club d'Essai → GRMC → GRM, Париж","GRM, Париж","Радіостудія, де народилася музика конкрет: Club d'Essai з 1946 року, Група досліджень конкретної музики з 1951-го, GRM з 1958-го, з 1975 року у складі INA. Тут навчилися слухати звук як об'єкт, а 1974 року Байль і Лаллеман створили акусмоніум — «оркестр» гучномовців.","GRM musique concrète Parmegiani Ferrari Bayle",w("Groupe de Recherches Musicales"),{yl:"1948/58",aes:"Музика конкрет, акусматичне слухання (écoute réduite), маніпуляції з плівкою, просторова проєкція звуку через акусмоніум.",peeps:["П'єр Шеффер","П'єр Анрі","Бернар Пармеджані","Люк Феррарі","Франсуа Байль","Яніс Ксенакіс","Еліан Радіг","Беатріс Феррейра","Мішель Шіон"]}],
+ ["wdr",1951,"sys","Аймерт, Майєр-Епплер, Баєр","Студія електронної музики WDR, Кельн","WDR, Кельн","Перша студія «чистої» електронної музики: звук будують із синусоїд, і серійний контроль поширюється на сам тембр. Тут створено «Studie I», «Studie II» і «Gesang der Jünglinge» Штокгаузена. Прямий антипод паризької музики конкрет.","WDR Studio für elektronische Musik Stockhausen Eimert",w("Studio for Electronic Music (WDR)"),{aes:"Чиста електронна музика (elektronische Musik), серійний контроль тембру, адитивний синтез, генератори синусоїд і шуму, кільцева модуляція.",peeps:["Герберт Аймерт","Вернер Майєр-Епплер","Роберт Баєр","Карлгайнц Штокгаузен","Готфрід Міхаель Кеніг","Дьордь Лігеті","Анрі Пуссер"]}],
+ ["nhk",1955,"proc","Маюдзумі, Мороі, Сібата, Юаса","Студія електронної музики NHK, Токіо","NHK, Токіо","Починали з плівкових експериментів за кельнською серійною моделлю, а згодом прийшли до японських інструментів і власного відчуття часу. Європейська система поступово розчиняється в іншій культурі слухання.","NHK electronic music studio Mayuzumi Takemitsu",w("NHK electronic music studio"),{yl:"1954/55",aes:"Європейський серіалізм і плівкові техніки, що поступово зливаються з японськими тембрами й відчуттям часу.",peeps:["Тосіро Маюдзумі","Макото Мороі","Мінао Сібата","Дзьодзі Юаса","Тосі Ітіянагі","Тору Такеміцу"]}],
+ ["sonology",1960,"proc","Готфрід Міхаель Кеніг та інші","Інститут сонології, Утрехт → Гаага","Сонологія","Заснований 1960 року в Утрехтському університеті як студія STEM, з 1967-го — Інститут сонології, з 1986-го — у Королівській консерваторії Гааги. Тут створили програми SSP, POD і PILE: комп'ютер стає партнером композитора, а синтез — алгоритмом.","Institute of Sonology Koenig SSP",w("Institute of Sonology"),{yl:"1960/67",aes:"Алгоритмічна композиція, програмний і нестандартний синтез (SSP, POD, PILE), комп'ютер як партнер композитора.",peeps:["Готфрід Міхаель Кеніг","Дік Раймакерс","Роланд Кайн","Яп Фінк","Пол Берг","Баррі Труакс"]}],
+ ["sftmc",1962,"proc","Рамон Сендер і Мортон Суботнік","San Francisco Tape Music Center","SF Tape Music Center","Колективна студія і концертний простір, що почався на горищі консерваторії. Тут 1964 року прозвучала прем'єра «In C», тут Оліверос працювала з плівковою затримкою, а учасники центру, передусім Суботнік, допомогли створити синтезатор Buchla. Згодом центр переїхав до Mills College.","San Francisco Tape Music Center Oliveros Subotnick Buchla",w("San Francisco Tape Music Center"),{aes:"Західноузбережна контркультурна жива електроніка, системи плівкової затримки, модульний синтезатор Buchla, студія як колективний концертний простір.",peeps:["Рамон Сендер","Мортон Суботнік","Полін Оліверос","Тоні Мартін","Вільям Магінніс","Дон Бухла","Террі Райлі"]}],
+ // ── Мікротональна лінія ──
+ ["carrillo",1922,"proc","Хуліан Каррільйо","«Preludio a Colón» і теорія «Sonido 13»","Sonido 13","Мексиканський композитор ділить тон на чверті, восьмі й шістнадцяті. Хроматична гама з 12 звуків перестає бути межею.","Julián Carrillo Preludio a Colón",w("Sonido 13")],
+ ["haba",1931,"proc","Алоїс Габа","Опера «Матка» в чвертьтонах","Габа «Матка»","Чеський композитор будує цілу оперу на чвертьтонах, для неї виготовляють спеціальні інструменти. Нова система стає способом почути простір між нотами.","Alois Hába quarter tone",w("Alois Hába")],
+ ["wyschnegradsky",1934,"proc","Іван Вишнеградський","24 прелюдії для двох чвертьтонових фортепіано","Вишнеградський","Два фортепіано, налаштовані з різницею в чверть тону. Вишнеградський називав такі інтервали «ультрахроматичними» і мріяв про безперервний звуковий простір.","Wyschnegradsky 24 Preludes quarter tone",w("Ivan Wyschnegradsky")],
+ ["fokker",1951,"proc","Адріан Фоккер","31-ступеневий орган, Гарлем","Орган Фоккера","Фізик, співавтор рівняння Фоккера–Планка, будує орган з 31 рівним ступенем в октаві за ідеєю Гюйгенса з XVII століття, щоб точніше почути сьому гармоніку. Для нього писали Бадінгс і ван Вестерінг. Але сам Фоккер мислив тонально і гостро сперечався з Петером Схатом через атональний твір для органа: радикальний інструмент його ж творець захищав від радикальної музики.","Fokker organ 31 tone Badings",w("Fokker organ")],
+ ["partch",1949,"proc","Гаррі Парч","«Genesis of a Music» і саморобні інструменти","Гаррі Парч","Гама з 43 ступенів у чистому строї і цілий оркестр інструментів власної конструкції. Строй як тілесна, фізична властивість звуку, а не абстрактна сітка.","Harry Partch instruments",w("Harry Partch")],
+ ["studie2",1954,"proc","Карлгайнц Штокгаузен","«Studie II»","Studie II","Синусоїди, складені за шкалою з 81 ступеня. Електроніка дає змогу виходити за межі темперованого строю.","Stockhausen Studie II",w("Studie II")],
+ ["johnston",1973,"proc","Бен Джонстон","Струнний квартет №4 «Amazing Grace»","Amazing Grace","Учень і помічник Парча розвиває розширений чистий стрій. Знайома мелодія звучить у строї, де акорди буквально «світяться» без биття.","Ben Johnston String Quartet 4 Amazing Grace",w("Ben Johnston (composer)")],
+ ["welltuned",1974,"sens","Ла Монте Янг","«The Well-Tuned Piano»","Well-Tuned Piano","Рояль у чистому строї і багатогодинна імпровізація. Інтервали без биття створюють стоячі хвилі, в які вслухаєшся всім тілом.","La Monte Young The Well-Tuned Piano",w("The Well-Tuned Piano"),{yl:"1964–74"}],
+ ["fullman",1981,"sens","Еллен Фуллман","Long String Instrument","Long String","Струни завдовжки в десятки метрів, по яких проводять натертими каніфоллю пальцями. Чистий стрій і обертони як архітектура простору.","Ellen Fullman Long String Instrument",w("Ellen Fullman")],
+ ["carlos",1986,"proc","Венді Карлос","«Beauty in the Beast»","Beauty in the Beast","Альбом цілком у нових строях і тембрах, зокрема в шкалах, що не повторюються через октаву. Синтезатор як лабораторія строю.","Wendy Carlos Beauty in the Beast",w("Beauty in the Beast (album)")],
+ // ── Warp, Pan Sonic, raster-noton ──
+ ["warp",1989,"proc","Бекетт, Мітчелл, Гордон","Лейбл Warp, Шеффілд","Warp","Лейбл виріс з музичної крамниці 1987 року. Спершу видає клубні сингли, а згодом стає головним домом електроніки для слухання.","Warp Records history",w("Warp (record label)")],
+ ["lfo",1990,"sens","LFO","«LFO»","LFO","Bleep techno з Шеффілда: глибокий суббас і прості синтетичні «біпи». Один з перших хітів Warp, звук, який відчуваєш грудьми.","LFO LFO Warp 1990",w("LFO (British band)")],
+ ["ai",1992,"proc","Різні виконавці, Warp","Збірка «Artificial Intelligence»","Artificial Intelligence","Електроніка для домашнього слухання, а не для клубу: Aphex Twin, Autechre, Plaid та інші. Звідси назва IDM. Танцпол повертається до уважного слухання.","Warp Artificial Intelligence 1992",w("Artificial Intelligence (compilation album)")],
+ ["incunabula",1993,"proc","Autechre","«Incunabula»","Incunabula","Дебютний альбом на Warp. Ще досить теплий і мелодійний, але вже з любов'ю до машинних ритмів, що згодом стануть генеративними.","Autechre Incunabula",w("Incunabula (album)")],
+ ["kulma",1997,"sens","Pan Sonic","«Kulma»","Pan Sonic «Kulma»","Фінський дует Міки Вайніо та Ільпо Вяйсянена, заснований у Турку в 1993 році як Panasonic. Корпорація погрожувала судом, і літеру «a» прибрали. Синусоїди, імпульси й суббас з частково саморобної апаратури: мінімалізм, який відчувається тілом.","Pan Sonic Kulma",w("Pan Sonic")],
+ ["boc",1998,"sens","Boards of Canada","«Music Has the Right to Children»","Boards of Canada","Розстроєні синтезатори, затерті плівкові текстури й дитячі голоси. Звук пам'яті, з якого потім виросте хонтологія.","Boards of Canada Music Has the Right to Children",w("Music Has the Right to Children")],
+ ["rasternoton",1999,"proc","Карстен Ніколаї","Лейбл raster-noton, Хемніц","raster-noton","Злиття лейблів noton і rastermusic у колишній НДР. Сітки, коди, мінімальні імпульси і суворий візуальний дизайн, де звук і графіка — одна система.","raster-noton",w("Raster-Noton")],
+ ["cyclo",2001,"proc","Alva Noto і Рьодзі Ікеда","«Cyclo.»","Cyclo.","Спільний проєкт двох мінімалістів: клацання, синусоїди й помилки, перетворені на ритм і зображення.","Alva Noto Ryoji Ikeda Cyclo",w("Alva Noto")],
+ ["vrioon",2002,"sens","Alva Noto і Рюїті Сакамото","«Vrioon»","Vrioon","Повільні фортепіанні акорди Сакамото і цифрові мікроклацання Ніколаї. Тиша й тендітність замість чистої конструкції.","Alva Noto Ryuichi Sakamoto Vrioon",w("Alva Noto")],
+ ["xerrox",2007,"proc","Alva Noto","«Xerrox Vol.1»","Xerrox","Звук проходить через багаторазове копіювання, і кожна копія втрачає й змінює інформацію. Близький родич «I Am Sitting in a Room» Лусьє, але в цифрі.","Alva Noto Xerrox Vol 1",w("Alva Noto")],
+ ["oksastus",2009,"sens","Pan Sonic","«Oksastus», наживо в Києві","Pan Sonic у Києві","Концертний альбом, записаний у Києві 2009 року, в рік розпаду дуету, і виданий 2014-го. Світова експериментальна сцена і київська публіка в одному записі.","Pan Sonic Oksastus live Kyiv",w("Pan Sonic"),{ua:1}],
+ // ── Українська лінія ──
+ ["expel1970",1970,"sys","Київський авангард","Виключення зі Спілки композиторів УРСР","Виключення 1970","Сильвестрова, Грабовського, Годзяцького і Губу виключають зі Спілки за відхід від радянських норм. Сильвестров порівнював це із задушенням. Тут «система» — це держава, а не естетика.","Київський авангард Сильвестров Грабовський",w("Kyiv avant-garde"),{ua:1}],
+ ["shapoval",1976,"sens","Shapoval Sextet","«Kobzareva Duma», концерт 1976","Kobzareva Duma","Концертний запис джазового секстету з назвою, що відсилає до кобзарської думи. Побачив світ лише у 2020 році на архівному лейблі Shukai.","Shapoval Sextet Kobzareva Duma","https://shukai.bandcamp.com/music",{ua:1}],
+ ["bystriakov",1982,"sens","Володимир Бистряков","Музика до мультфільму «Аліса в Задзеркаллі»","Аліса в Задзеркаллі","Київнаукфільм, радянські синтезатори і клавесин. Психоделічний експеримент знайшов прихисток у дитячій анімації. Перевидано Shukai у 2019 році.","Бистряков Аліса в Задзеркаллі 1982","https://snowsovgethen.com/journal/volodymyr-bystriakov-alice-through-the-looking-glass-1982-2019-shukai",{ua:1}],
+ ["goncharova",1987,"sens","Валентина Гончарова","«Recordings 1987–1991»","Гончарова","Уродженка Києва вдома записує електроскрипку, осцилятори, каструлі й вази з п'єзодатчиками та радянську лінію затримки. Записи тридцять років чекали на видання.","Valentina Goncharova Recordings 1987-1991","https://daily.bandcamp.com/features/valentina-goncharova-recordings-1987-1991-vol-1-interview",{ua:1,yl:"1987–91"}],
+ ["cukor",1988,"sens","Цукор Біла Смерть","Гурт «Цукор Біла Смерть»","Цукор Біла Смерть","Світлана Няньо, Таміла Мазур, Євген Таран, Олександр Кохановський. Дарквейв, український фольк і авант-прог на домашніх касетах. Одна з точок відліку «Нової сцени»; у 2024 році Shukai видав «Recordings 1990–1993».","Цукор Біла Смерть",w("Cukor Bila Smerť"),{ua:1}],
+ ["sonicyouth",1989,"sens","Sonic Youth","Концерт у Києві","Sonic Youth у Києві","Після цього концерту Олексій Дегтяр розвертає свій проєкт від нової хвилі до індустріального шуму. Західний нойз-рок як поштовх для київського андеграунду.","Sonic Youth 1989 USSR tour","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1}],
+ ["ivanovdown",1990,"sens","Олексій Дегтяр","Проєкт Ivanov Down","Ivanov Down","Пост-панк, нойз-рок та індастріал з Києва. Культовий альбом прямо називає міський технічний шум своїм матеріалом, майже як Руссоло.","Ivanov Down Best Urban Technical Noises","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1}],
+ ["kazma",1991,"sens","Kazma-Kazma","Гурт з Харкова","Kazma-Kazma","Середньовічна музика, пост-панк і авант-прог. Ключовий гурт харківського об'єднання «Нова сцена»; дебют потрапив до списку ста ключових касет радянського року.","Kazma-Kazma",w("Kazma-Kazma"),{ua:1}],
+ ["novascena",1991,"proc","Сергій Мясоєдов","Фестивалі «Нова сцена»","Нова сцена","Фестивалі 1991–1992 років у Києві, Харкові й Донецьку. Мережа малих колективів, домашніх студій і касетних лейблів як альтернатива офіційному року.","Нова сцена Харків андеграунд 1991","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1,yl:"1991–92"}],
+ ["yarn",1993,"sens","Yarn (Іван Москаленко)","«Palm Sunday»","Palm Sunday","Експериментальний пост-панк та інді-фолк. Москаленко згодом піде в нойз та електроніку як DJ Derbastler і в проєкті Shake Hi-Fi.","Yarn Palm Sunday Ukraine","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1}],
+ ["yurchenko",1994,"proc","Олександр Юрченко","«Лічи до ста: Симфонія №1»","Лічи до ста","Дроун-симфонія на інструментах власного винаходу. Юрченко грав у Yarn, Blemish, Suphina's Little Beasts і записувався з Няньо. Симфонію видали лише 2020 року.","Олександр Юрченко Лічи до ста",w("Oleksandr Yurchenko"),{ua:1}],
+ ["nianio94",1994,"sens","Світлана Няньо","«Transilvania Smile»","Transilvania Smile","Музика до театральної вистави: фортепіано, фісгармонія і тихий інтимний голос. Записано 1994 року, видано Shukai у 2023-му.","Svitlana Nianio Transilvania Smile",w("Svitlana Nianio"),{ua:1}],
+ ["skhovaysya",1995,"sens","Різні виконавці","Касетна збірка «Сховайся»","Сховайся","Збірка київського андеграунду, серед іншого з ранніми записами Няньо. Касета як носій цілої сцени.","Сховайся касета 1995",w("Skhovaysya"),{ua:1}],
+ ["skp",1999,"proc","Сергій «Dubmasta» Дубровський","Лейбл SKP Records","SKP Records","Київський лейбл нойзового IDM і дабу, заснований колишнім учасником Foa-Hoka. Тут видавалися Пан Кіфаред і King Imagine.","Dubmasta SKP Records","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1}],
+ ["kytytsi",1999,"sens","Світлана Няньо","«Китиці»","Китиці","Перший сольний альбом, виданий на Koka Records. Фортепіано, голос і незвичні тембри замість пісенної форми.","Svitlana Nianio Kytytsi",w("Svitlana Nianio"),{ua:1}],
+ ["nexsound",2000,"proc","Андрій Кириченко","Лейбл Nexsound","Nexsound","Харківський лейбл експериментальної електроніки. Видавав і українців (Заволока, Kotra, The Moglass), і світових авторів, від Muslimgauze до Кіма Каскоуна. У 2005–2007 роках проводив фестиваль «Деталі звуку».","Andrey Kiritchenko Nexsound",w("Nexsound"),{ua:1}],
+ ["zagaykevych",2004,"proc","Алла Загайкевич","«Пори року на Майдані»","Пори року на Майдані","Електроакустика, відео і голос. Загайкевич заснувала студію електроакустичної музики в Національній музичній академії і з 2003 року курує фестиваль «Електроакустика».","Алла Загайкевич","https://ukrainianlive.org/zahaykevych-alla",{ua:1}],
+ ["dakha",2004,"sens","ДахаБраха","«Етно-хаос» з театру «ДАХ»","ДахаБраха","Автентичні українські пісні в поєднанні з ритмами й інструментами з усього світу. Фольк звучить не як музейний експонат, а як живе тіло.","ДахаБраха",w("DakhaBrakha"),{ua:1}],
+ ["zavoloka",2005,"sens","Заволока","«Plavyna»","Plavyna","Фольклор і мікросаунд. Альбом на Nexsound отримав почесну відзнаку Prix Ars Electronica.","Zavoloka Plavyna",w("Zavoloka"),{ua:1}],
+ ["kvitnu",2006,"proc","Дмитро Федоренко (Kotra)","Лейбл Kvitnu","Kvitnu","Лейбл інтенсивної експериментальної електроніки, фестивалі Kvitnu Fest і «Деталі звуку». Закрився у 2020 році релізом «Silence» Kotra і Заволоки.","Kotra Kvitnu",w("Kvitnu"),{ua:1}],
+ ["muscut",2012,"proc","Дмитро Ніколаєнко","Лейбл Muscut","Muscut","Лівфілд-електроніка і хонтологія. Тут видаються Chillera і Bryozone з її петлями з морських записів і туманних сирен.","Muscut label","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/",{ua:1}],
+ ["volya",2014,"sens","Заволока","«Volya»","Volya","Ритми з семплів металу, по якому били на Майдані. Протест стає звуковим матеріалом і документом водночас.","Zavoloka Volya","https://norient.com/stories/ukrainian-noise",{ua:1}],
+ ["cxema",2014,"sens","Слава Лепшеєв","Рейви Cxema","Cxema","Техно в постіндустріальних просторах Києва і політика «без фейс-контролю». Після 2022 року — менші денні події через комендантську годину.","Cxema Kyiv rave",w("Cxema"),{ua:1}],
+ ["manulyak",2014,"proc","Остап Мануляк","Студія EESEM, Львів","EESEM","Експериментальна навчальна студія електроакустики при Львівській музичній академії. Мануляк курує фестиваль VOX ELECTRONICA і бачить технологію як продовження акустичних інструментів.","Ostap Manulyak","https://ukrainianlive.org/manulyak-ostap",{ua:1}],
+ ["ptakh",2016,"sens","Ptakh_Jung","Дует Антона Дегтярьова і Володимира Бабушкіна","Ptakh_Jung","Свій стиль вони називають пост-класичним електронним імпресіонізмом, між неокласикою і пост-роком. Пишуть музику і для документального кіно.","Ptakh Jung",w("Ptakh Jung"),{ua:1}],
+ ["shukai",2019,"sys","Ніколаєнко, Цапенко, Пруткін","Архівний лейбл Shukai","Shukai","«Шукай» перевидає дивну й авангардну українську музику 1960–1991 років: Гончарову, Юрченка, Няньо, «Цукор Біла Смерть». Як Мендельсон з Бахом у 1829 році, архів знову будує канон.","Shukai records","https://shukai.bandcamp.com/music",{ua:1}],
+ ["closer",2020,"sens","Клуб ∄ і лейбл Standard Deviation","Збірка «Intermission»","Intermission","Київський клуб як небінарний безпечний простір. Перша збірка лейблу: Катаріна Гривул, Nastya Vogan, Voin Oruwu з Cxema та інші.","Standard Deviation Intermission","https://standard-deviation.bandcamp.com",{ua:1}],
+ ["variat",2020,"sens","Дмитро Федоренко","Проєкт VARIÁT","VARIÁT","«Дисонансна нойз-поезія»: метал як перкусія, просвердлені тарілки і знайдені предмети через перепалені підсилювачі.","VARIÁT Dmytro Fedorenko","https://www.new-east-archive.org/articles/show/13102/variat-ukrainian-experimental-music-dmytro-fedorenko",{ua:1}],
+ ["gryvul",2022,"proc","Катаріна Гривул","Скрипка, тембри й електроніка","Гривул","Композиторка, скрипалька і саунд-артистка, що вчилася у Львові. Поєднує органічні звуки й академічну музику з електронним продакшном; виступала на CTM, Варшавській осені та Ars Electronica.","Katarina Gryvul","https://www.ctm-festival.de/festival-2023/programme/artists/k/katarina-gryvul",{ua:1}],
+ ["bomb",2022,"proc","Heinali (Олег Шпудейко)","«Live from a Bomb Shelter in Ukraine»","Bomb Shelter","Через повітряну тривогу благодійний стрім зі Львова переносять в укриття, і Шпудейко грає там сам з модульним синтезатором. Система звуку як спосіб залишатися присутнім.","Heinali Live from a Bomb Shelter","https://heinali.bandcamp.com/album/live-from-a-bomb-shelter-in-ukraine",{ua:1}],
+ ["eternal",2023,"sens","Heinali","«Kyiv Eternal»","Kyiv Eternal","Синтезатори і польові записи довоєнного Києва, які автор збирав з 2011 року: станція «Майдан Незалежності», водії маршруток, ботанічний сад. Капсула часу міського звуку.","Heinali Kyiv Eternal","https://heinali.bandcamp.com/album/kyiv-eternal",{ua:1}],
+ ["diy",2025,"proc","NU31, Tembra Modular, Kaximia","DIY-синтезатори в київському хакерспейсі","DIY-синти","Майстер-класи з паяння, модулі київського виробництва і нойз. Інструмент знову будують власними руками, як Юрченко у 90-х.","Kaximia synth DIY","https://cdm.link/kyiv-diy/",{ua:1}],
+ ["fieldnotes",2025,"sens","Сцена воєнного часу","Ukrainian Field Notes","Field Notes","Продюсери, що служать в армії, хіп-хоп на семплах українських платівок 70–80-х, лоу-фай, натхненний окупацією Херсона. Музика як щоденник війни.","Ukrainian underground music 2025","https://acloserlisten.com/2025/10/19/ukrainian-field-notes-xlviii/",{ua:1}]
+];
+const N=R.map(r=>{const o=r[9]||{};return{id:r[0],y:r[1],lane:r[2],author:r[3],title:r[4],s:r[5],note:r[6],q:r[7],
+  listen:"https://www.youtube.com/results?search_query="+encodeURIComponent(r[7]),read:r[8],counter:!!o.c,ua:!!o.ua,yl:o.yl||String(r[1]),aes:o.aes||"",peeps:o.peeps||[]}});
+
+const E=[["beethoven","hanslick"],["mendelssohn","hanslick"],["hanslick","schoenberg"],["berlioz","wagner"],["wagner","debussy"],["wagner","farben"],
+ ["farben","schoenberg"],["farben","ligeti"],["schoenberg","webern"],["schoenberg","babbitt"],["webern","darmstadt"],["darmstadt","messiaen"],["schoenberg","adorno"],
+ ["messiaen","boulez"],["messiaen","grisey"],["messiaen","martenot"],["boulez","xenakis"],["boulez","ligeti"],["rite","octet"],["octet","hindemith"],
+ ["satie","furniture"],["furniture","eno"],["eno","mood"],["debussy","grisey"],["debussy","ligeti"],["busoni","varese"],["russolo","varese"],["russolo","antheil"],
+ ["russolo","schaeffer"],["varese","cage39"],["cowell","cage39"],["varese","poeme"],["xenakis","poeme"],["cage39","changes"],["changes","433"],["ives","cage39"],
+ ["433","oliveros"],["433","fluxus"],["oliveros","deep"],["schaeffer","henry"],["schaeffer","reich"],["schaeffer","radigue"],["schaeffer","watson"],
+ ["riley","reich"],["reich","eno"],["young","riley"],["young","radigue"],["feldman","cardew"],["gesang","kraftwerk"],["gesang","stimmung"],["kraftwerk","techno"],
+ ["schafer","westerkamp"],["schafer","watson"],["watson","winderen"],["zhdanov","lyatoshynsky"],["lyatoshynsky","silvestrov"],["lyatoshynsky","hrabovsky"],
+ ["darmstadt","silvestrov"],["radiophonic","aphex"],["xenakis","spiegel"],["spiegel","max"],["max","autechre"],["max","sc"],["sc","tidal"],["oval","cascone"],
+ ["ikeda","cascone"],["xenakis","toplap"],["toplap","tidal"],["tidal","algorave"],["tidal","strudel"],["toplap","sonicpi"],["techno","algorave"],
+ ["lucier","oval"],["radigue","malone"],["young","malone"],["toplap","lcbook"],["nancarrow","autechre"],["barron","radiophonic"],["herndon","mood"],
+ ["zhdanov","expel1970"],["expel1970","silvestrov"],["mendelssohn","shukai"],["goncharova","shukai"],["cukor","shukai"],["yurchenko","shukai"],["nianio94","shukai"],
+ ["bystriakov","shukai"],["shapoval","shukai"],["muscut","shukai"],["radiophonic","bystriakov"],["cage39","goncharova"],["cukor","nianio94"],["cukor","novascena"],
+ ["novascena","kazma"],["cukor","dakha"],["sonicyouth","ivanovdown"],["russolo","ivanovdown"],["yarn","yurchenko"],["yurchenko","nianio94"],["nianio94","skhovaysya"],
+ ["nianio94","kytytsi"],["kazma","skp"],["cascone","nexsound"],["nexsound","zavoloka"],["nexsound","kvitnu"],["zavoloka","volya"],["kvitnu","variat"],
+ ["schaeffer","zagaykevych"],["zagaykevych","manulyak"],["manulyak","gryvul"],["techno","cxema"],["cxema","closer"],["closer","gryvul"],["cxema","fieldnotes"],
+ ["schafer","eternal"],["bomb","eternal"],["yurchenko","diy"],
+ ["busoni","haba"],["busoni","carrillo"],["carrillo","wyschnegradsky"],["haba","wyschnegradsky"],["partch","johnston"],["partch","yurchenko"],["partch","fullman"],
+ ["young","welltuned"],["welltuned","malone"],["welltuned","fullman"],["studie2","gesang"],["studie2","carlos"],["barron","carlos"],
+ ["kraftwerk","lfo"],["techno","lfo"],["warp","lfo"],["lfo","ai"],["aphex","ai"],["ai","incunabula"],["incunabula","autechre"],["ai","boc"],["boc","muscut"],
+ ["merzbow","kulma"],["young","kulma"],["kulma","oksastus"],["kulma","rasternoton"],["ikeda","cyclo"],["rasternoton","cyclo"],["oval","rasternoton"],
+ ["cyclo","xerrox"],["lucier","xerrox"],["rasternoton","vrioon"],["satie","vrioon"],["carrillo","fokker"],["wyschnegradsky","fokker"],["fokker","johnston"],
+ ["schaeffer","grm"],["grm","henry"],["grm","radigue"],["grm","zagaykevych"],["grm","nhk"],["darmstadt","wdr"],["wdr","studie2"],["wdr","gesang"],
+ ["wdr","ligeti"],["wdr","nhk"],["wdr","sonology"],["xenakis","sonology"],["sonology","max"],["433","sftmc"],["sftmc","riley"],["sftmc","oliveros"],["grm","radiophonic"]];
+const UA_PERIODS=[
+ ["1960–1970-ті","Авангард під наглядом","Київський авангард вивчає Кейджа, Ксенакіса і Віденську школу, але для держави це «формалізм». У 1970 році чотирьох композиторів виключають зі Спілки. Тут видно головну особливість української лінії: система, проти якої повстають, часто не естетична, а державна.",["lyatoshynsky","hrabovsky","expel1970","silvestrov","shapoval"]],
+ ["1980-ті","Експеримент у сховку","Офіційно дивну музику не видають, тому вона ховається в прикладних жанрах і вдома. Бистряков пише синтезаторну психоделію для мультфільму Київнаукфільму, а Гончарова записує скрипку і каструлі на котушковий магнітофон.",["bystriakov","goncharova"]],
+ ["1988–1995","«Нова сцена»: касети і саморобні інструменти","Незалежна сцена народжується як культурна опозиція офіційному року. Малі колективи в Києві й Харкові, домашні записи, касетні лейбли, академічно освічені музиканти, що звертаються до фольку, середньовіччя і нойзу. Звук тут — це насамперед текстура, тембр і голос, а не правильна форма.",["cukor","sonicyouth","ivanovdown","kazma","novascena","yarn","yurchenko","nianio94","skhovaysya"]],
+ ["1999–2013","Лейбли, фестивалі й академічна електроакустика","Сцена стає інфраструктурою: Nexsound, Kvitnu і SKP видають експериментальну електроніку, фестиваль «Деталі звуку» привозить світових артистів, а Загайкевич будує електроакустику всередині академії. Фольк повертається вже через мікросаунд і етно-хаос.",["kytytsi","skp","nexsound","zagaykevych","dakha","zavoloka","kvitnu","muscut"]],
+ ["2014–2021","Майдан, рейв і архів","Протест стає звуковим матеріалом, а рейв — новою формою громадськості. Водночас Shukai починає розкопувати 1960–1991 роки, і стара андеграундна музика вперше отримує вінілові видання, переважно для західного ринку.",["volya","cxema","manulyak","ptakh","shukai","closer","variat"]],
+ ["2022–2026","Звук як свідчення","Під час повномасштабної війни слухання стає буквально питанням виживання: тривоги, укриття, тиша міста. Музиканти грають з укриттів, записують довоєнні міста як пам'ять, служать в армії і продовжують випускати музику, а молодь паяє власні синтезатори.",["gryvul","bomb","eternal","diy","fieldnotes"]]
+];
+const UA_READ=[
+ ["Ukrainian Indie Music: A Short Primer","The Quietus","Найповніший англомовний огляд від «Цукру» до сучасних лейблів.","https://thequietus.com/opinion-and-essays/ukrainian-indie-music-guide-tsukor-bila-smert/"],
+ ["Про лейбл Shukai","Glissando","Як працює архівна «археологія звуку» і які записи вдалося врятувати.","https://corridors.glissando.pl/?p=1572"],
+ ["Ukrainian Field Notes","A Closer Listen","Регулярна серія про українську сцену воєнного часу.","https://acloserlisten.com/2025/10/19/ukrainian-field-notes-xlviii/"],
+ ["Kyiv avant-garde","Wikipedia","Склад групи і історія виключення 1970 року.","https://en.wikipedia.org/wiki/Kyiv_avant-garde"],
+ ["Polyrhythmic Ukrainian Noise","Norient","Заволока і Федоренко про шум Майдану як матеріал.","https://norient.com/stories/ukrainian-noise"],
+ ["Inside Kyiv's hackerspace","CDM","DIY-синтезатори і нойз у Києві, 2025.","https://cdm.link/kyiv-diy/"]
+];
+
+const GLOSS=[
+ ["Додекафонія","Техніка Шенберга (1920-ті): усі 12 тонів октави впорядковано в ряд, і твір будується з цього ряду та його перетворень.","Twelve-tone technique"],
+ ["Серіалізм","Поширення ідеї ряду з висоти звуку на тривалість, гучність і атаку. Тотальний серіалізм — це 1950-ті, Дармштадт.","Serialism"],
+ ["Мікротональність","Музика з інтервалами, меншими за півтон: чверть тону, шістнадцята тону тощо. Каррільйо, Габа, Вишнеградський, орган Фоккера з 31 ступенем в октаві.","Microtonal music"],
+ ["Чистий стрій","Строй, де інтервали утворено простими співвідношеннями частот. Акорди звучать без биття, а обертони стають відчутними. Парч, Янг, Джонстон.","Just intonation"],
+ ["Bleep techno","Мінімальне техно з Шеффілда кінця 1980-х: глибокий суббас і прості синтетичні сигнали. LFO, Sweet Exorcist.","Bleep techno"],
+ ["IDM","Електроніка для слухання вдома, а не для танцю. Назва пішла від збірки Warp «Artificial Intelligence» 1992 року.","Intelligent dance music"],
+ ["Klangfarbenmelodie","«Мелодія тембрів»: мелодію утворює не зміна висоти, а зміна кольору звуку між інструментами.","Klangfarbenmelodie"],
+ ["Музика конкрет","Музика з записаних реальних звуків, змонтованих на плівці. Шеффер, Париж, 1948.","Musique concrète"],
+ ["Редуковане слухання","Слухання звуку самого по собі, без думки про його джерело чи значення. Поняття Шеффера.","Acousmatic sound"],
+ ["Алеаторика","Музика, де частину рішень віддано випадку або виконавцю.","Aleatoric music"],
+ ["Графічна партитура","Нотація у вигляді малюнків, ліній і символів замість звичних нот.","Graphic notation (music)"],
+ ["Мікрополіфонія","Багато голосів так щільно переплетені, що вухо чує не лінії, а текстуру. Лігеті.","Micropolyphony"],
+ ["Мінімалізм","Повтор, поступові зміни і чутний процес. Райлі, Райх, Гласс, Янг.","Minimal music"],
+ ["Дроун","Довгий тривалий звук або акорд, всередині якого слухач починає чути обертони і дрібні зміни.","Drone music"],
+ ["Спектралізм","Музика, побудована з аналізу спектра звуку. Ґрізе, Мюрай, з 1970-х.","Spectral music"],
+ ["Акустична екологія","Вивчення звукового середовища і стосунків людини з ним. Шейфер, Вестеркамп.","Acoustic ecology"],
+ ["Саундскейп","Звуковий ландшафт: усе, що звучить у певному місці, сприйняте як ціле.","Soundscape"],
+ ["Глибоке слухання","Практика уважного слухання всього довкола і себе. Термін і метод Полін Оліверос.","Deep Listening"],
+ ["Ембієнт","Музика як середовище, яку можна слухати уважно або пропускати повз. Термін Браяна Іно.","Ambient music"],
+ ["Глітч","Естетика збою: помилки цифрових систем стають музичним матеріалом.","Glitch (music)"],
+ ["Live coding","Створення музики чи візуалу написанням коду наживо, з показаним публіці екраном.","Live coding"],
+ ["Сонифікація","Перетворення даних на звук, щоб почути закономірності, яких не видно.","Sonification"]
+];
+
+// [chip label, aesthetic, synonyms for search, node ids]; people are collected from the nodes themselves
+const GENRES=[
+ ["Електронні студії","Радіостудії й університетські лабораторії, де техніку електронного звуку винаходили колективно: плівка, генератори, перші комп'ютери.","studio студія радіо radio лабораторія",["grm","wdr","nhk","sonology","radiophonic","sftmc"]],
+ ["Ембієнт","Музика як середовище, фонова увага, повільні петлі, розмиті текстури, пам'ять і ностальгія.","ambient ембієнт фон",["furniture","eno","aphex","boc","vrioon","eternal","satie","ptakh","muscut","radigue"]],
+ ["Дроун","Тривалі тони й акорди, обертони, чистий стрій, повільна зміна, слухання як медитація.","drone дроун тривалий звук",["young","welltuned","radigue","malone","stimmung","yurchenko","coltrane","fullman","oliveros","deep"]],
+ ["Нойз","Шум як матеріал, перевантаження, метал і машини, фізичний тиск звуку, протест.","noise нойз шум індастріал industrial",["russolo","antheil","varese","merzbow","ivanovdown","sonicyouth","variat","kvitnu","volya","kulma","ikeda","diy"]],
+ ["Техно і рейв","Повторюваний біт, суббас, танцпол як колективне тіло, постіндустріальні простори, ніч.","techno rave техно рейв клуб club bleep",["techno","lfo","cxema","algorave","closer","fieldnotes","kraftwerk"]],
+ ["Мікротональність","Інтервали, менші за півтон, чистий і 31-ступеневий строї, нові клавіатури й інструменти, простір між нотами.","microtonal мікротони чвертьтон quarter tone just intonation чистий стрій xenharmonic",["carrillo","haba","wyschnegradsky","fokker","partch","studie2","johnston","welltuned","fullman","carlos","malone","busoni"]],
+ ["Серіалізм","Ряди з 12 тонів, контроль усіх параметрів звуку, математична організація, повоєнний «нуль».","serialism серіалізм додекафонія twelve-tone 12-tone ряд",["schoenberg","webern","darmstadt","messiaen","boulez","babbitt","adorno","expel1970","hrabovsky","gesang"]],
+ ["Мінімалізм","Повтор, поступові процеси, фазові зсуви, редукція до імпульсу й синусоїди.","minimal minimalism мінімалізм повтор",["satie","riley","reich","young","eno","kulma","rasternoton","cyclo","ikeda"]],
+ ["Код і алгоритми","Код як партитура й інструмент, алгоритмічна композиція, імпровізація наживо, відкриті екрани, помилка як подія.","live coding код code алгоритм algorithm програмування",["toplap","tidal","algorave","strudel","sonicpi","sc","lcbook","max","spiegel","autechre","sonology"]],
+ ["Глітч","Збої цифрових систем, клацання, пропуски, копіювання з втратою, естетика помилки.","glitch глітч помилка error clicks",["oval","cascone","ikeda","rasternoton","cyclo","xerrox","vrioon","autechre"]],
+ ["Фольк і етно","Автентичні співи й обряди, народні тембри в нових контекстах, від етно-готики до мікросаунду.","folk фольк етно ethno народна",["cukor","kazma","dakha","zavoloka","nianio94","kytytsi","rite","shapoval","fieldnotes"]],
+ ["Електроакустика і плівка","Записаний звук як об'єкт, монтаж і петлі на плівці, синусоїди, просторова проєкція.","electroacoustic електроакустика tape плівка magnetic concrete конкрет",["grm","wdr","nhk","sftmc","schaeffer","henry","gesang","studie2","poeme","radiophonic","barron","zagaykevych","manulyak","gryvul","reich","lucier","goncharova"]],
+ ["Польові записи","Звук місця, саундскейп, гідрофони, акустична екологія, документ і пам'ять.","field recording польові записи soundscape саундскейп акустична екологія",["schafer","westerkamp","watson","winderen","eternal","deep","lucier","433"]],
+ ["IDM і Warp","Електроніка для домашнього слухання, складні ритми, клубне коріння без функції танцю.","idm warp braindance home listening",["ai","incunabula","autechre","aphex","boc","warp","lfo"]],
+ ["Пост-панк і рок","Гітари, касети, домашній запис, темна хвиля, андеграунд як опозиція офіційній сцені.","post-punk пост-панк rock рок dark wave дарквейв",["cukor","sonicyouth","ivanovdown","yarn","kazma","novascena","skhovaysya"]],
+ ["Джаз","Імпровізація, спіритуальність, модальність і дроун.","jazz джаз",["coltrane","shapoval"]],
+ ["Спектралізм і тембр","Тембр як головний матеріал, спектр звуку, кластери, хмари й текстури замість мелодії.","spectral спектралізм тембр timbre texture текстура",["grisey","ligeti","farben","debussy","penderecki"]],
+ ["Партитури-інструкції","Графічні знаки, текстові інструкції, події, відкритість прочитання.","graphic score графічна партитура інструкція instruction event",["feldman","cardew","penderecki","fluxus","young","oliveros","433"]],
+ ["Випадковість","Рішення віддано випадку, Книзі змін або виконавцю; композитор відмовляється від контролю.","chance aleatoric алеаторика випадковість",["changes","433","fluxus","cardew"]],
+ ["Саморобні інструменти","Інструменти власної конструкції, паяння, модулі, нові звуки з нових тіл.","diy саморобні self-built instruments інструменти паяння",["partch","russolo","yurchenko","kulma","diy","theremin","cowell","goncharova","fullman"]],
+ ["Синтезатори","Генератори, осцилятори, модулярні системи, електрика як голос.","synth synthesizer синтезатор модуляр modular",["theremin","martenot","kraftwerk","spiegel","carlos","barron","bystriakov","bomb","diy","eternal","sftmc","wdr"]],
+ ["Голос","Голос як тембр і тіло, обертоновий спів, мова, що розпадається на звук.","voice голос спів vocal",["stimmung","nianio94","kytytsi","herndon","lucier","gesang","henry","cukor"]],
+ ["Лейбли","Інфраструктура сцени: видання, фестивалі, спільноти навколо звуку.","label лейбл records",["warp","nexsound","kvitnu","skp","muscut","shukai","rasternoton","closer"]],
+ ["Кіно і анімація","Музика для екрана як прихисток експерименту.","film кіно soundtrack саундтрек анімація мультфільм",["barron","bystriakov","radiophonic","ptakh"]],
+ ["Архів і канон","Перевидання, відродження, збирання канону, музика минулого як нова.","archive архів reissue перевидання канон canon",["mendelssohn","shukai","beethoven","hanslick","fokker"]],
+ ["Війна і протест","Звук як свідчення, цензура, протест, тривоги, пам'ять про місто.","war війна protest протест майдан цензура",["volya","bomb","eternal","fieldnotes","expel1970","zhdanov","lyatoshynsky","penderecki","cxema"]]
+];
+const byId=Object.fromEntries(N.map(n=>[n.id,n]));
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[ʼ'’`]/g,"").replace(/ё/g,"е").replace(/львов/g,"львів").replace(/києв/g,"київ").replace(/харков/g,"харків");
+N.forEach(n=>{n.gen=[];});
+GENRES.forEach(g=>g[3].forEach(id=>{if(byId[id])byId[id].gen.push(g)}));
+const eraOf=y=>ERAS.find(e=>y>=e.a&&y<e.b);
+N.forEach(n=>n.era=eraOf(n.y).id);
+document.getElementById("count").textContent="Позначок на карті: "+N.length+".";
+
+// geometry
+const PADL=120,TOP=78,LANEH=150,STAFFGAP=24,LBL=150;
+let acc=PADL;ERAS.forEach(e=>{e.x=acc;acc+=e.w});const WIDTH=acc+40;
+const xOf=y=>{const e=eraOf(y);return e.x+18+(y-e.a)/(e.b-e.a)*(e.w-36)};
+const laneOrder=["sys","proc","sens"];
+const laneY=l=>TOP+laneOrder.indexOf(l)*LANEH+12;
+const HEIGHT=TOP+3*LANEH+10;
+laneOrder.forEach(l=>{
+  const rows=[-1e9,-1e9,-1e9,-1e9,-1e9],order=[2,0,4,1,3];
+  N.filter(n=>n.lane===l).sort((a,b)=>a.y-b.y).forEach(n=>{
+    n.x=xOf(n.y);
+    let r=order.find(i=>n.x-rows[i]>LBL);if(r===undefined)r=order.reduce((m,i)=>rows[i]<rows[m]?i:m,order[0]);
+    rows[r]=n.x;n.yy=laneY(l)+r*STAFFGAP;
+  });
+});
+
+const svg=document.getElementById("map"),NS="http://www.w3.org/2000/svg";
+svg.setAttribute("viewBox",`0 0 ${WIDTH} ${HEIGHT}`);svg.setAttribute("width",WIDTH);svg.setAttribute("height",HEIGHT);
+const mk=(t,a,p)=>{const el=document.createElementNS(NS,t);for(const k in a)if(a[k]!=null)el.setAttribute(k,a[k]);(p||svg).appendChild(el);return el};
+ERAS.forEach((e,i)=>{
+  if(i%2===0)mk("rect",{x:e.x,y:0,width:e.w,height:HEIGHT,fill:"var(--band)"});
+  mk("line",{x1:e.x,x2:e.x,y1:14,y2:HEIGHT,stroke:"var(--rule)","stroke-dasharray":"2 4"});
+  mk("text",{x:e.x+12,y:30,class:"eralabel"}).textContent=e.name;
+  mk("text",{x:e.x+12,y:48,class:"erayears"}).textContent=`${e.a}–${e.b===2027?"зараз":e.b}`;
+});
+laneOrder.forEach(l=>{
+  const y0=laneY(l);
+  for(let i=0;i<5;i++)mk("line",{x1:PADL-8,x2:WIDTH-20,y1:y0+i*STAFFGAP,y2:y0+i*STAFFGAP,class:"staff"});
+  mk("rect",{x:0,y:y0-12,width:PADL-14,height:4*STAFFGAP+24,fill:"var(--paper)"});
+  mk("text",{x:14,y:y0+2*STAFFGAP-4,class:"lanelabel",style:`fill:var(--${l})`}).textContent=LANES[l].name;
+  mk("text",{x:14,y:y0+2*STAFFGAP+12,class:"erayears"}).textContent=LANES[l].sub;
+});
+const gE=mk("g",{}),gN=mk("g",{});
+const edges=E.filter(([a,b])=>byId[a]&&byId[b]).map(([a,b])=>{const A=byId[a],B=byId[b];const dx=Math.max(40,Math.abs(B.x-A.x)*.5);
+  return{a,b,p:mk("path",{d:`M${A.x},${A.yy} C${A.x+dx},${A.yy} ${B.x-dx},${B.yy} ${B.x},${B.yy}`,class:"edge"},gE)}});
+N.forEach(n=>{
+  const g=mk("g",{class:"node",tabindex:0,role:"button","aria-label":`${n.yl}, ${n.author}, ${n.title}`},gN);n.g=g;
+  mk("rect",{x:n.x-10,y:n.yy-12,width:LBL-8,height:24,fill:"transparent"},g);
+  const hd=mk("g",{class:"head",style:`transform-origin:${n.x}px ${n.yy}px`},g);
+  mk("ellipse",{cx:n.x,cy:n.yy,rx:7.5,ry:5.2,transform:`rotate(-22 ${n.x} ${n.yy})`,fill:n.counter?"var(--paper)":`var(--${n.lane})`,stroke:`var(--${n.lane})`,"stroke-width":n.counter?1.6:0,"stroke-dasharray":n.counter?"2 2":null,class:"ring"},hd);
+  const yr=mk("text",{x:n.x+13,y:n.yy-3,class:"yr"},g);yr.textContent=n.yl;
+  if(n.ua){const t=mk("tspan",{class:"uat"},yr);t.textContent=" · UA"}
+  mk("text",{x:n.x+13,y:n.yy+10,class:"nm"},g).textContent=n.s;
+  g.addEventListener("click",()=>select(n.id));
+  g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();select(n.id)}});
+});
+
+const hidden=new Set();let uaOnly=false;
+document.querySelectorAll(".chip[data-lane]").forEach(c=>c.addEventListener("click",()=>{
+  const l=c.dataset.lane;if(hidden.has(l))hidden.delete(l);else hidden.add(l);
+  c.setAttribute("aria-pressed",!hidden.has(l));render();
+}));
+document.getElementById("uaonly").addEventListener("click",e=>{uaOnly=!uaOnly;e.currentTarget.setAttribute("aria-pressed",uaOnly);render()});
+const visible=n=>!hidden.has(n.lane)&&(!uaOnly||n.ua);
+
+let current="433";
+const rel=id=>({from:E.filter(e=>e[1]===id&&byId[e[0]]).map(e=>e[0]),to:E.filter(e=>e[0]===id&&byId[e[1]]).map(e=>e[1])});
+let hits=null; // Set of ids matching the search, or null
+function render(){
+  const r=rel(current),near=new Set([current,...r.from,...r.to]);
+  N.forEach(n=>{n.g.style.display=visible(n)?"":"none";n.g.classList.toggle("sel",n.id===current);
+    n.g.classList.toggle("hit",!!hits&&hits.has(n.id));
+    n.g.classList.toggle("dim",hits?(!hits.has(n.id)&&n.id!==current):(!uaOnly&&!near.has(n.id)))});
+  edges.forEach(e=>{const on=e.a===current||e.b===current;const vis=visible(byId[e.a])&&visible(byId[e.b]);
+    e.p.style.display=vis?"":"none";e.p.classList.toggle("on",on);e.p.style.stroke=on?`var(--${byId[e.a].lane})`:"";e.p.style.opacity=on?1:.55;
+    e.p.classList.toggle("quiet",!!hits&&!on&&!(hits.has(e.a)&&hits.has(e.b)))});
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const chipList=ids=>ids.length?`<ul>${ids.map(i=>`<li><button data-go="${i}"><span>${byId[i].yl}</span>${esc(byId[i].s)}</button></li>`).join("")}</ul>`:`<span class="none">—</span>`;
+let moreOpen=false;
+function select(id,opts={}){
+  current=id;const n=byId[id],e=ERAS.find(x=>x.id===n.era),r=rel(id);
+  const d=document.getElementById("detail");
+  const extra=`${n.aes?`<p class="d-aes"><span class="k">Естетика</span>${esc(n.aes)}</p>`:""}
+    ${n.peeps.length?`<div class="d-peeps"><span class="k">Люди</span><p class="peeps">${n.peeps.map(p=>`<button type="button" data-person="${esc(p)}">${esc(p)}</button>`).join("")}</p></div>`:""}
+    ${n.gen.length?`<div class="d-peeps"><span class="k">Естетики</span><p class="peeps">${n.gen.map(g=>`<button type="button" class="aes" data-aes="${GENRES.indexOf(g)}">${esc(g[0])}</button>`).join("")}</p></div>`:""}`;
+  d.innerHTML=`<div>
+    <div class="d-meta"><span>${n.yl}</span><span>·</span><span>${esc(e.name)}</span><span class="lanetag" style="--c:var(--${n.lane})">${LANES[n.lane].name}</span>${n.ua?'<span class="uatag">UA</span>':""}</div>
+    <h2 class="d-title">${esc(n.title)}</h2>
+    <p class="d-author">${esc(n.author)}</p>
+    <p class="d-note"><span class="k">${n.counter?"Контраргумент":"Що це доводить"}</span>${esc(n.note)}</p>
+    ${n.counter?`<span class="counter">контрпруф для статті</span>`:""}
+  </div>
+  <div class="d-side">
+    <div class="btns"><a class="btn primary" href="${n.listen}" target="_blank" rel="noopener">Слухати ↗</a><a class="btn" href="${n.read}" target="_blank" rel="noopener">Читати ↗</a></div>
+    <details class="more"${moreOpen?" open":""}><summary>Більше</summary>
+      ${extra}
+      <div class="rel"><span class="k">Звідки прийшло</span>${chipList(r.from)}</div>
+      <div class="rel"><span class="k">Куди повело</span>${chipList(r.to)}</div>
+    </details>
+  </div>`;
+  d.querySelector(".more").addEventListener("toggle",e=>{moreOpen=e.target.open});
+  d.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>select(b.dataset.go,{scroll:true})));
+  d.querySelectorAll("[data-person]").forEach(b=>b.addEventListener("click",()=>searchFor(b.dataset.person)));
+  d.querySelectorAll("[data-aes]").forEach(b=>b.addEventListener("click",()=>pickAes(+b.dataset.aes)));
+  render();
+  const smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
+  if(opts.scroll){const box=document.getElementById("mapbox");box.scrollTo({left:Math.max(0,n.x-box.clientWidth/2),behavior:smooth})}
+  if(opts.toMap)document.getElementById("mapbox").scrollIntoView({behavior:smooth,block:"start"});
+}
+
+// eras + reading lists
+const erasEl=document.getElementById("eras");
+ERAS.forEach(e=>{
+  const items=N.filter(n=>n.era===e.id).sort((a,b)=>a.y-b.y);
+  const s=document.createElement("article");s.className="era";
+  s.innerHTML=`<div><div class="yrs">${e.a}–${e.b===2027?"зараз":e.b}</div><h3>${esc(e.name)}</h3></div>
+  <div><p class="thesis">${esc(e.thesis)}</p><ul class="works">${items.map(n=>`<li style="--c:var(--${n.lane})">
+    <span class="y">${n.yl}</span><span class="dot" title="${LANES[n.lane].name}"></span>
+    <button class="t" data-sel="${n.id}"><b>${esc(n.title)}</b> <span>— ${esc(n.author)}</span>${n.ua?' <span class="uatag">UA</span>':""}</button>
+    <span class="lk"><a href="${n.listen}" target="_blank" rel="noopener">слухати</a><a href="${n.read}" target="_blank" rel="noopener">читати</a></span></li>`).join("")}</ul>
+    <div class="books"><span class="k">Що почитати</span><ul>${e.books.map(b=>`<li><a class="bt" href="${b[3]}" target="_blank" rel="noopener">${esc(b[0])}</a><span class="ba">${esc(b[1])}</span><span class="bn">${esc(b[2])}</span></li>`).join("")}</ul></div></div>`;
+  erasEl.appendChild(s);
+});
+erasEl.querySelectorAll("[data-sel]").forEach(b=>b.addEventListener("click",()=>select(b.dataset.sel,{scroll:true,toMap:true})));
+
+document.getElementById("gloss").innerHTML=GLOSS.map(g=>`<div><dt>${esc(g[0])}</dt><dd>${esc(g[1])}</dd><dd class="gl"><a href="${w(g[2])}" target="_blank" rel="noopener">Докладніше ↗</a></dd></div>`).join("");
+
+// era jump
+const jumpEl=document.getElementById("erajump");
+ERAS.forEach(e=>{const b=document.createElement("button");b.textContent=`${e.a}–${e.b===2027?"зараз":e.b}`;b.title=e.name;
+  b.addEventListener("click",()=>{const box=document.getElementById("mapbox");box.scrollTo({left:Math.max(0,e.x-PADL),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});jumpEl.appendChild(b)});
+
+// Ukrainian section
+document.getElementById("uaper").innerHTML=UA_PERIODS.map(p=>`<article><div><div class="yrs">${p[0]}</div><h3>${esc(p[1])}</h3></div><div><p>${esc(p[2])}</p><ul>${p[3].filter(i=>byId[i]).map(i=>`<li><button data-sel="${i}" style="--c:var(--${byId[i].lane})"><span>${byId[i].yl}</span>${esc(byId[i].s)}</button></li>`).join("")}</ul></div></article>`).join("");
+document.getElementById("uaread").innerHTML=UA_READ.map(b=>`<li><a class="bt" href="${b[3]}" target="_blank" rel="noopener">${esc(b[0])}</a><span class="ba">${esc(b[1])}</span><span class="bn">${esc(b[2])}</span></li>`).join("");
+document.querySelectorAll("#uaper [data-sel]").forEach(b=>b.addEventListener("click",()=>select(b.dataset.sel,{scroll:true,toMap:true})));
+
+// search
+N.forEach(n=>{const e=ERAS.find(x=>x.id===n.era);
+  n.hay=norm([n.title,n.author,n.s,n.note,n.q,n.yl,e.name,LANES[n.lane].name,n.ua?"україна ukraine ua український":"",n.aes,...n.peeps,...n.gen.map(g=>g[0]+" "+g[1]+" "+g[2])].join(" "))});
+const peopleOf=g=>[...new Set(g[3].filter(id=>byId[id]).flatMap(id=>byId[id].peeps.length?byId[id].peeps:[byId[id].author]))];
+const qEl=document.getElementById("q"),resEl=document.getElementById("results"),clrEl=document.getElementById("qclear"),genEl=document.getElementById("genres");
+genEl.innerHTML=GENRES.map((g,i)=>`<button type="button" data-g="${i}" aria-pressed="false" title="${esc(g[1])}">${esc(g[0])}<span>${g[3].filter(id=>byId[id]).length}</span></button>`).join("");
+let activeGenre=null;
+function runSearch(){
+  const raw=qEl.value.trim();clrEl.hidden=!raw&&activeGenre===null;
+  let set=null;
+  if(activeGenre!==null)set=new Set(GENRES[activeGenre][3].filter(id=>byId[id]));
+  if(raw){const toks=norm(raw).split(/\s+/).filter(Boolean);
+    const m=new Set(N.filter(n=>toks.every(t=>n.hay.includes(t))).map(n=>n.id));
+    set=set?new Set([...set].filter(id=>m.has(id))):m}
+  hits=set;
+  genEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.g===activeGenre)));
+  if(!hits){resEl.hidden=true;render();return}
+  const list=[...hits].map(id=>byId[id]).sort((a,b)=>a.y-b.y);
+  const label=[activeGenre!==null?GENRES[activeGenre][0]:"",raw?`«${raw}»`:""].filter(Boolean).join(" + ");
+  resEl.hidden=false;
+  const g=activeGenre!==null?GENRES[activeGenre]:null;
+  const card=g?`<div class="aescard"><div class="aesrow"><span class="k">Естетика</span><p>${esc(g[1])}</p></div><div class="aesrow"><span class="k">Люди</span><p class="peeps">${peopleOf(g).map(p=>`<button type="button" data-person="${esc(p)}">${esc(p)}</button>`).join("")}</p></div></div>`:"";
+  resEl.innerHTML=card+(list.length?`<div class="rc">${label}: знайдено ${list.length}. Натисни, щоб відкрити на карті.</div><ul>${list.map(n=>`<li><button data-go="${n.id}" style="--c:var(--${n.lane})"><span>${n.yl}</span>${esc(n.s)} <em>· ${esc(n.author)}</em></button></li>`).join("")}</ul>`
+    :`<div class="rc">${label}: нічого не знайдено. Спробуй інше слово, латиницю (наприклад, Cage) або одну з естетик вище.</div>`);
+  resEl.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>select(b.dataset.go,{scroll:true})));
+  resEl.querySelectorAll("[data-person]").forEach(b=>b.addEventListener("click",()=>searchFor(b.dataset.person)));
+  render();
+  if(list.length){const box=document.getElementById("mapbox");box.scrollTo({left:Math.max(0,list[0].x-PADL),behavior:"auto"})}
+}
+const optBtn=document.getElementById("optToggle"),optEl=document.getElementById("opts");
+optBtn.addEventListener("click",()=>{const open=optEl.hidden;optEl.hidden=!open;optBtn.setAttribute("aria-expanded",String(open))});
+function searchFor(text){activeGenre=null;qEl.value=text;runSearch();qEl.scrollIntoView({behavior:"smooth",block:"center"})}
+function pickAes(i){activeGenre=i;qEl.value="";runSearch();qEl.scrollIntoView({behavior:"smooth",block:"center"})}
+let qt;qEl.addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(runSearch,140)});
+qEl.addEventListener("keydown",e=>{if(e.key==="Escape"){qEl.value="";activeGenre=null;runSearch()}
+  if(e.key==="Enter"&&hits&&hits.size){const first=[...hits].map(id=>byId[id]).sort((a,b)=>a.y-b.y)[0];select(first.id,{scroll:true})}});
+clrEl.addEventListener("click",()=>{qEl.value="";activeGenre=null;runSearch();qEl.focus()});
+genEl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const i=+b.dataset.g;activeGenre=activeGenre===i?null:i;qEl.value="";runSearch()});
+document.addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement!==qEl&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();qEl.focus()}});
+
+select("433");
+requestAnimationFrame(()=>{const box=document.getElementById("mapbox");box.scrollLeft=Math.max(0,byId["433"].x-box.clientWidth*0.45)});
+</script>
+
+</body>
+</html>
